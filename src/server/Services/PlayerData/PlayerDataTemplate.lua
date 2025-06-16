@@ -5,6 +5,12 @@ export type PlayerDataTemplateType = {
 			Xbox: string,
 		}
 	},
+
+	Equips: {
+		Balloon: string,
+		Weapon: string,
+	},
+
 	leaderstats: {
 		Wins: number
 	},
@@ -27,6 +33,12 @@ PlayerDataTemplate.Get = function() : PlayerDataTemplateType
 		leaderstats = {
 			Wins = 0,
 		},
+
+		Equips = {
+			Balloon = 'Blue',
+			Weapon = 'Kuni',
+		},
+
 		Currency = {
 			Coins = 10,
 		},

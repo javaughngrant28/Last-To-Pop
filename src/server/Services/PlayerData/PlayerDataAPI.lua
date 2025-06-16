@@ -24,7 +24,7 @@ local PlayerDataAPI = {}
 
 function PlayerDataAPI.Set(playerName: string, data: PlayerDataTemplate.PlayerDataTemplateType)
     if LoadedData[playerName] then 
-        error(`Existing Data Found With Same Matching KeyName: {playerName} - {unpack(existingData)}`) 
+        error(`Existing Data Found With Same Matching KeyName: {playerName}`) 
     end
     LoadedData[playerName] = data
 end

@@ -6,6 +6,11 @@ export type PlayerDataInstancesType = {
 		}
 	},
 
+	Equips: {
+		Balloon: string,
+		Weapon: string,
+	},
+
 	leaderstats: {
 		Wins: number
 	},
@@ -22,6 +27,12 @@ PlayerDataInstances.Get = function() : PlayerDataInstancesType
 	return {
 		FinishedLoading = false,
 		Keybinds = {},
+
+		Equips = {
+			Balloon = '',
+			Weapon = '',
+		},
+		
 		leaderstats = {
 			Wins = 0,
 		},
