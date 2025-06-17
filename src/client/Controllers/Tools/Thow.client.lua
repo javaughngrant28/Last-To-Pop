@@ -12,6 +12,7 @@ local function toolActivated(tool: Tool)
 end
 
 local function onToolAdded(tool: Tool)
+    print(tool)
     Maid[tool.Name..'Activated'] = tool.Activated:Connect(function()
         toolActivated(tool)
     end)

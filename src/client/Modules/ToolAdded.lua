@@ -29,10 +29,16 @@ local function AttemptCallback(tool: Instance)
 end
 
 local function backPackConnection(backPack: Instance)
+	local backpack = backPack :: Backpack
 	if not backPack:IsA('Backpack') then return end
+
 	backPack.ChildAdded:Connect(function(tool: Instance)
 		AttemptCallback(tool)
 	end)
+
+	for _, tool in backpack:GetChildren() do
+		AttemptCallback(tool)
+	end
 end
 
 
@@ -71,7 +77,10 @@ end
 
 local con
 con = player.ChildAdded:Connect(function(child: Instance)
-	backPackConnection(child)
+	if child:IsA('Backpack') then
+		backPackConnection(child)
+		con:Disconnect()
+	end
 end)
 
 
