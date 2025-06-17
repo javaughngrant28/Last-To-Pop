@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local PlayerAPI = require(game.ServerScriptService.Services.Players.PlayerAPI)
 local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterEvents)
 local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
+local WeaponAPI = require(game.ServerScriptService.Services.Weapons.WeaponAPI)
 
 local PLayerLoadedSignal = PlayerAPI.GetPlayerLoadedSignal()
 local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
@@ -11,6 +12,7 @@ local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
 local function onCharacterAdded(character: Model, player: Player)
     BalloonAPI.Create(player)
+    WeaponAPI.Create(player)
 end
 
 local function onPlayerAdded(player: Player)

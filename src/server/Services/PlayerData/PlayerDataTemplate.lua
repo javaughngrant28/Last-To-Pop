@@ -36,7 +36,7 @@ PlayerDataTemplate.Get = function() : PlayerDataTemplateType
 
 		Equips = {
 			Balloon = 'Blue',
-			Weapon = 'Kuni',
+			Weapon = 'Kunai',
 		},
 
 		Currency = {

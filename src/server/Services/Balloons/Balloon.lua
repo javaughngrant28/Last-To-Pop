@@ -63,13 +63,13 @@ function Balloon:_AttachToCharacter()
 	VectorForce.Parent = model.PrimaryPart
 	VectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
 	VectorForce.Attachment0 = modelAttachment
-	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 1.4), 0)
+	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 2), 0)
 	
 	local linearVelocity = Instance.new('LinearVelocity')
 	linearVelocity.Parent = model.PrimaryPart
 	linearVelocity.Attachment0 = modelAttachment
 	linearVelocity.VectorVelocity = Vector3.new(0,0,0)
-	linearVelocity.MaxForce = 4
+	linearVelocity.MaxForce = 8
 	
 	local angularVelocity = Instance.new("BodyAngularVelocity")
 	angularVelocity.AngularVelocity = Vector3.new()
