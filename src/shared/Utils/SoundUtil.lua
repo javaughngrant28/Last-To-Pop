@@ -1,3 +1,4 @@
+local Debris = game:GetService('Debris')
 local soundService = game:GetService('SoundService')
 local SoundUtil = {}
 
@@ -39,6 +40,26 @@ function SoundUtil.PlayInInstance(sound: Sound, instance: Instance)
 
 	newSound:Destroy()
 end
+
+function SoundUtil.PlayAtPosition(sound: Sound, position: Vector3)
+	if sound == nil or position == nil then return end
+
+	 local tempPart = Instance.new("Part")
+    tempPart.Anchored = true
+    tempPart.CanCollide = false
+	tempPart.CanTouch = false
+	tempPart.CanQuery = false
+    tempPart.Position = position
+    tempPart.Parent = workspace
+	tempPart.Transparency = 1
+
+	local newSound = sound:Clone()
+	newSound.Parent = tempPart
+	newSound:Play()
+
+	Debris:AddItem(tempPart,sound.TimeLength or 1)
+end
+
 
 function SoundUtil.CreateSoundFromIdAndPlayInPart(soundId: string, part: Part)
 	if soundId == nil or part == nil then return end

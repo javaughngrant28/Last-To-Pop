@@ -11,7 +11,11 @@ export type BalloonType = {
 
 
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
+local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
+local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
+
 local Ballons = game.ReplicatedStorage.Assets.Balloons
+local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
 
 
 
@@ -56,12 +60,23 @@ function Balloon:__Constructor(object: Model | Part, modelName: string)
 	self._ROOT_PART = object:IsA('Model') and object:FindFirstChild('HumanoidRootPart')  or object:IsA('Model') and object.PrimaryPart or object
 	self._PARENT_INSTANCE = object
 
+	self:_AutoDestroy()
 	self:_AttachToCharacter()
 end
 
 
 function Balloon:Pop()
+
 	local model = self._MAID['Model'] :: Model
+	local positionPopped = model.PrimaryPart.CFrame.Position
+	local popSound = model:FindFirstChild('Pop',true) :: Sound?
+
+	if popSound then
+		SoundUtil.PlayAtPosition(popSound,positionPopped)
+	end
+
+	ParticleUtil.EmitParticlesAtPosition(Effect,positionPopped)
+
 	model.PrimaryPart:SetAttribute('Balloon',nil)
 
 	for _, part:BasePart in model:GetChildren()do
@@ -118,7 +133,13 @@ function Balloon:_AttachToCharacter()
 	model.Parent = workspace:FindFirstChild('Ballons')
 end
 
+function Balloon:_AutoDestroy()
+	local parnetInstance = self._PARENT_INSTANCE :: Model | Part
 
+	self._MAID['Distroying'] = parnetInstance.Destroying:Connect(function()
+		self:Destroy()
+	end)
+end
 
 function Balloon:Destroy()
 
