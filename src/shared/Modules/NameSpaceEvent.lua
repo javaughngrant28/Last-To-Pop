@@ -111,7 +111,7 @@ end
 function NameSpaceEvent:FireServer(methodName: string,...)
 	local remote: RemoteEvent? = self:_FindRemote(methodName)
 	assert(remote,`{methodName} Remote Not Found`)
-	remote:FireServer(...)
+	remote:FireServer(self._KEY,...)
 end
 
 function NameSpaceEvent:FireClient(methodName: string,player: Player,...)
