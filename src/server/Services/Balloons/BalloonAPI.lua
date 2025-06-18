@@ -2,6 +2,7 @@
 local Signal = require(game.ReplicatedStorage.Shared.Modules.Signal)
 
 local CreateSignal = Signal.new()
+local PopSignal = Signal.new()
 
 
 
@@ -9,13 +10,26 @@ local function GetCreateSignal(): Signal.SignalType
     return CreateSignal
 end
 
-local function Create(player: Player)
-    CreateSignal:Fire(player)
+local function GetPopSignal(): Signal.SignalType
+    return PopSignal
 end
 
 
+local function Create(object: Model | Part)
+    CreateSignal:Fire(object)
+end
+
+local function Pop(balloon: Part)
+    PopSignal(balloon)
+end
+
+
+
 return {
-    CreateSignal = GetCreateSignal,
-    Create = Create
+    Create = Create,
+    Pop = Pop,
+
+    _CreateSignal = GetCreateSignal,
+    _PopSignal = GetPopSignal,
 }
 
