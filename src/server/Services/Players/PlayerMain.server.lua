@@ -12,7 +12,9 @@ local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
 
 local function onCharacterAdded(character: Model, player: Player)
-    BalloonAPI.Create(player)
+    local ballonEquipped = player:FindFirstChild('Balloon',true):: StringValue
+
+    BalloonAPI.Create(character,ballonEquipped.Value)
     WeaponAPI.Create(player)
     CharacterSetup.Fire(character)
 end

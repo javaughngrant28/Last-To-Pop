@@ -4,6 +4,7 @@ local WeaponAPI = require(script.Parent.WeaponAPI)
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
 local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
+local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
 
 local VisualizeRay = require(script.Parent.VisualizeRay)
 local Raycast = require(script.Parent.Raycast)
@@ -31,13 +32,14 @@ local function CreateWeapon(player: Player)
 end
 
 
-local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vector3)
+local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vector3, loclBalloon: Model?)
 
     local sound = tool:FindFirstChild('Shoot',true) :: Sound
 
     local result = Raycast.Fire(origin,dirction,SHOOT_DISTANCE,{
         player.Character,
-        tool
+        tool,
+        loclBalloon,
     })
 
     local target = result and result.Instance or false
@@ -45,8 +47,8 @@ local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vecto
 
     VisualizeRay.Fire(origin,dirction,targetDistance)
 
-    if target then
-        print(target)
+    if target and target:GetAttribute('Balloon') then
+        BalloonAPI.Pop(target)
     end
 
     SoundUtil.PlayInInstance(sound,tool)

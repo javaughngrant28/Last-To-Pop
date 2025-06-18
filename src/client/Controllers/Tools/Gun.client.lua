@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
+local Ballons = workspace:WaitForChild('Ballons',10) :: Folder
 
 
 local ToolDetection = require(script.Parent.Parent.Parent.Modules.ToolDetection)
@@ -26,8 +27,9 @@ local function toolActivated(tool: Tool, muzzle: Part)
     local rootPart = CurrentCharacter:FindFirstChild('HumanoidRootPart') :: Part
     local origin = muzzle.CFrame.Position
     local direction = (Mouse.Hit.Position - muzzle.CFrame.Position).Unit
-
-    WeaponEvent:FireServer('Shoot',tool,origin,direction)
+    local Balloon = Ballons:FindFirstChild(CurrentCharacter.Name)
+    
+    WeaponEvent:FireServer('Shoot',tool,origin,direction,Balloon)
 
     task.wait(debounceTime)
     debounce = false

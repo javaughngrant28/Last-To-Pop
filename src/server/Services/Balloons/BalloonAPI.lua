@@ -15,12 +15,12 @@ local function GetPopSignal(): Signal.SignalType
 end
 
 
-local function Create(object: Model | Part)
-    CreateSignal:Fire(object)
+local function Create(object: Model | Part, balloonName: string)
+    CreateSignal:Fire(object,balloonName)
 end
 
 local function Pop(balloon: Part)
-    PopSignal(balloon)
+    PopSignal:Fire(balloon)
 end
 
 

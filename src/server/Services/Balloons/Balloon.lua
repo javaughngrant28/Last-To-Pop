@@ -1,7 +1,11 @@
+local Players = game:GetService("Players")
 
 
 export type BalloonType = {
-	new: (player: Player, modelName: string)-> BalloonType,
+	MODEl: Model,
+
+	new: (object: Model | Part, modelName: string)-> BalloonType,
+	Pop: ()-> (),
 	Destroy: ()->(),
 }
 
@@ -14,74 +18,106 @@ local Ballons = game.ReplicatedStorage.Assets.Balloons
 local Balloon = {}
 Balloon.__index = Balloon
 
-Balloon._CHARACTER = nil
-Balloon._MODEL = nil
+Balloon.MODEL = nil
+
+Balloon._REFRENCE_MODEL = nil
+Balloon._ROOT_PART = nil
+Balloon._PARENT_INSTANCE = nil
+Balloon._PLAYER = nil
 
 Balloon._MAID = nil
 
-function Balloon.new(player: Player, modelName: string)
+function Balloon.new(object: Model | Part, modelName: string)
 	local self = setmetatable({}, Balloon)
 	
-	self:__Constructor(player, modelName)
+	self:__Constructor(object, modelName)
 	return self
 end
 
 
-function Balloon:__Constructor(player: Player, modelName: string)
-	local charaacter = player.Character
-	assert(charaacter,`{player} Has No Character`)
+function Balloon:__Constructor(object: Model | Part, modelName: string)
+
+	assert(object and object:IsA('BasePart') or object:IsA('Model'),`{object} Invalid`)
+	
+	if object:IsA('Model') then
+		assert(object.PrimaryPart,`{object} Model Has No PrimaryPart`)
+	end
 
 	local BalloonModel = Ballons:FindFirstChild(modelName) :: Model
-	assert(BalloonModel,`{player} {modelName} Balloon Model Not Found`)
+	assert(BalloonModel,`{object} {modelName} Balloon Model Not Found`)
 	assert(
 		BalloonModel:IsA('Model') and BalloonModel.PrimaryPart,
 		`{BalloonModel} Has No PrimaryPart Or Is Not A Model`
 	)
 
-	self._CHARACTER = charaacter
-	self._MODEL = BalloonModel
 	self._MAID = MaidModule.new()
-	
+	self._PLAYER = Players:GetPlayerFromCharacter(object) or nil
+	self._REFRENCE_MODEL = BalloonModel
+	self._ROOT_PART = object:IsA('Model') and object:FindFirstChild('HumanoidRootPart')  or object:IsA('Model') and object.PrimaryPart or object
+	self._PARENT_INSTANCE = object
+
 	self:_AttachToCharacter()
 end
 
 
+function Balloon:Pop()
+	local model = self._MAID['Model'] :: Model
+	model.PrimaryPart:SetAttribute('Balloon',nil)
+
+	for _, part:BasePart in model:GetChildren()do
+		if part:IsA('BasePart') then
+			part.Transparency = 1
+			part.CanTouch = false
+			part.CanCollide = false
+		end
+	end
+
+	self._MAID['VectorForce'] = nil
+	self._MAID['LinearVelocity'] = nil
+end
+
+
 function Balloon:_AttachToCharacter()
-	local model = self._MODEL:Clone() :: Model
+	local model = self._REFRENCE_MODEL:Clone() :: Model
 	self._MAID['Model'] = model
+	self.MODEL = model
 	
 	local ropeConstraint = model:FindFirstChildWhichIsA('RopeConstraint',true) :: RopeConstraint
 	local modelAttachment = model.PrimaryPart:FindFirstChildWhichIsA('Attachment',true	) :: Attachment
 	local modelMass =  model.PrimaryPart:GetMass()
 	
-	local character = self._CHARACTER :: Model
-	local torso = character:WaitForChild('Torso',5)
-	local backAttachment = torso:WaitForChild('BodyBackAttachment',5)
-	
+	local rootPart = self._ROOT_PART :: Part
+	local rootAttachment = rootPart:FindFirstChild('BodyBackAttachment') or rootPart:FindFirstChildWhichIsA('Attachment',true) :: Attachment
 	
 	local VectorForce = Instance.new('VectorForce')
+	self._MAID['VectorForce'] = VectorForce
 	VectorForce.Parent = model.PrimaryPart
 	VectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
 	VectorForce.Attachment0 = modelAttachment
 	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 2), 0)
 	
 	local linearVelocity = Instance.new('LinearVelocity')
+	self._MAID['LinearVelocity'] = linearVelocity
 	linearVelocity.Parent = model.PrimaryPart
 	linearVelocity.Attachment0 = modelAttachment
 	linearVelocity.VectorVelocity = Vector3.new(0,0,0)
 	linearVelocity.MaxForce = 8
 	
 	local angularVelocity = Instance.new("BodyAngularVelocity")
+	self._MAID['BodyAngularVelocity'] = angularVelocity
 	angularVelocity.AngularVelocity = Vector3.new()
 	angularVelocity.MaxTorque = Vector3.new(4000, 4000, 4000)
 	angularVelocity.Parent = model.PrimaryPart
 	
-	ropeConstraint.Attachment0 = backAttachment
+	ropeConstraint.Attachment0 = rootAttachment
 	ropeConstraint.Attachment1 = modelAttachment
 	ropeConstraint.Enabled = true
 	
-	model.Parent = workspace
+	model.PrimaryPart:SetAttribute('Balloon',true)
+	model.Name = self._PARENT_INSTANCE.Name
+	model.Parent = workspace:FindFirstChild('Ballons')
 end
+
 
 
 function Balloon:Destroy()
