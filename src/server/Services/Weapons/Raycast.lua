@@ -1,6 +1,6 @@
 
 
-local function CreatRay(origin: Vector3, dirction: number, distance: number, excludeList: {Instance}): RaycastResult
+local function CreatRay(origin: Vector3, dirction: Vector3, distance: number, excludeList: {Instance | Model?}): RaycastResult
     local raycastParams = RaycastParams.new()
 	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 	raycastParams.FilterDescendantsInstances = excludeList

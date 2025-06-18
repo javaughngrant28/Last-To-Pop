@@ -29,13 +29,13 @@ function SoundUtil.PlaySoundInElement(soundReffrence: Sound, element: GuiObject)
     sound:Destroy()
 end
 
-function SoundUtil.PlayInPart(sound: Sound, part: BasePart)
-	if sound == nil or part == nil then return end
+function SoundUtil.PlayInInstance(sound: Sound, instance: Instance)
+	if sound == nil or instance == nil then return end
 	if sound.ClassName ~= 'Sound' then return end
 
 	local newSound = sound:Clone()
 	newSound.PlayOnRemove = true
-	newSound.Parent = part
+	newSound.Parent = instance
 
 	newSound:Destroy()
 end
