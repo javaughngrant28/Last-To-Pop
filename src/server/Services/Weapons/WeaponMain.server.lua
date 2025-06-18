@@ -3,8 +3,11 @@
 local WeaponAPI = require(script.Parent.WeaponAPI)
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
+local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
+
 local VisualizeRay = require(script.Parent.VisualizeRay)
 local Raycast = require(script.Parent.Raycast)
+
 
 local Tools = game.ReplicatedStorage.Assets.Tools
 
@@ -30,6 +33,8 @@ end
 
 local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vector3)
 
+    local sound = tool:FindFirstChild('Shoot',true) :: Sound
+
     local result = Raycast.Fire(origin,dirction,SHOOT_DISTANCE,{
         player.Character,
         tool
@@ -43,6 +48,8 @@ local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vecto
     if target then
         print(target)
     end
+
+    SoundUtil.PlayInInstance(sound,tool)
 end
 
 
