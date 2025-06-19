@@ -39,7 +39,7 @@ local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vecto
     local result = Raycast.Fire(origin,dirction,SHOOT_DISTANCE,{
         player.Character,
         tool,
-        loclBalloon,
+        -- loclBalloon,
     })
 
     local target = result and result.Instance or false

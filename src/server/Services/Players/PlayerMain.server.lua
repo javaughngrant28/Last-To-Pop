@@ -6,6 +6,9 @@ local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterE
 local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
 local WeaponAPI = require(game.ServerScriptService.Services.Weapons.WeaponAPI)
 local CharacterSetup = require(script.Parent.CharacterSetup)
+local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
+
+local Maid: MaidModule.Maid = MaidModule.new()
 
 local PLayerLoadedSignal = PlayerAPI.GetPlayerLoadedSignal()
 local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()

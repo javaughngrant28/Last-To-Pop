@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
-local Ballons = workspace:WaitForChild('Ballons',10) :: Folder
+local Balloons = workspace:WaitForChild('Balloons',10) :: Folder
 
 
 local ToolDetection = require(script.Parent.Parent.Parent.Modules.ToolDetection)
@@ -27,7 +27,7 @@ local function toolActivated(tool: Tool, muzzle: Part)
     local rootPart = CurrentCharacter:FindFirstChild('HumanoidRootPart') :: Part
     local origin = muzzle.CFrame.Position
     local direction = (Mouse.Hit.Position - muzzle.CFrame.Position).Unit
-    local Balloon = Ballons:FindFirstChild(CurrentCharacter.Name)
+    local Balloon = Balloons:FindFirstChild(CurrentCharacter.Name)
     
     WeaponEvent:FireServer('Shoot',tool,origin,direction,Balloon)
 
@@ -36,6 +36,10 @@ local function toolActivated(tool: Tool, muzzle: Part)
 end
 
 local function onToolAdded(tool: Tool)
+    repeat
+        task.wait(0.4)
+    until tool:FindFirstChild('Muzzle',true)
+
     local muzzle = tool:FindFirstChild('Muzzle',true)
     assert(muzzle,`{tool} has no muzzle`)
 
@@ -45,9 +49,14 @@ local function onToolAdded(tool: Tool)
 end
 
 local function onCharacterAdded(character: Model)
+    ToolDetection.new(onToolAdded)
     CurrentCharacter = character
 end
 
+local function onCharacterRemove()
+    ToolDetection.destroy(onToolAdded)
+end
 
 CharacterEvents.Spawn(onCharacterAdded)
-ToolDetection.new(onToolAdded)
+CharacterEvents.Removing(onCharacterRemove)
+CharacterEvents.Died(onCharacterRemove)

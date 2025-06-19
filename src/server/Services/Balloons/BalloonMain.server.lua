@@ -2,7 +2,7 @@
 
 local Balloons = Instance.new('Folder')
 Balloons.Parent = workspace
-Balloons.Name = 'Ballons'
+Balloons.Name = 'Balloons'
 
 local Balloon = require(script.Parent.Balloon)
 local BalloonAPI = require(script.Parent.BalloonAPI)

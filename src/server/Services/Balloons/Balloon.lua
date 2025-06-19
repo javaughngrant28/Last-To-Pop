@@ -13,6 +13,8 @@ export type BalloonType = {
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
 local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
+local Ragdoll = require(game.ServerScriptService.Modules.Ragdoll)
+local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 local Ballons = game.ReplicatedStorage.Assets.Balloons
 local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
@@ -28,6 +30,7 @@ Balloon._REFRENCE_MODEL = nil
 Balloon._ROOT_PART = nil
 Balloon._PARENT_INSTANCE = nil
 Balloon._PLAYER = nil
+Balloon._POP_FORCE = 8
 
 Balloon._MAID = nil
 
@@ -68,9 +71,12 @@ end
 function Balloon:Pop()
 
 	local model = self._MAID['Model'] :: Model
+	local forceFeild = self._PARENT_INSTANCE:FindFirstChildWhichIsA('ForceField')
 	local positionPopped = model.PrimaryPart.CFrame.Position
 	local popSound = model:FindFirstChild('Pop',true) :: Sound?
 
+	if forceFeild then return end
+	
 	if popSound then
 		SoundUtil.PlayAtPosition(popSound,positionPopped)
 	end
@@ -89,6 +95,24 @@ function Balloon:Pop()
 
 	self._MAID['VectorForce'] = nil
 	self._MAID['LinearVelocity'] = nil
+
+	local humanoidRootPart = self._PARENT_INSTANCE:FindFirstChild('HumanoidRootPart') :: Part
+	local humanoid = self._PARENT_INSTANCE:FindFirstChildWhichIsA('Humanoid',true) :: Humanoid?
+	local player = self._PLAYER :: Player?
+
+	-- if humanoidRootPart then
+	-- 	Ragdoll.Enable(self._PARENT_INSTANCE)
+	-- 	task.delay(1,Ragdoll.Disable,self._PARENT_INSTANCE)
+	-- end
+
+	if humanoid then
+		humanoid.Health = 0
+	end
+
+	if player then
+		RemoteUtil.FireClient('Pop',player,positionPopped,self._POP_FORCE)
+	end
+	
 end
 
 
@@ -102,21 +126,21 @@ function Balloon:_AttachToCharacter()
 	local modelMass =  model.PrimaryPart:GetMass()
 	
 	local rootPart = self._ROOT_PART :: Part
-	local rootAttachment = rootPart:FindFirstChild('BodyBackAttachment') or rootPart:FindFirstChildWhichIsA('Attachment',true) :: Attachment
+	local rootAttachment = self._PARENT_INSTANCE:FindFirstChild('Head') and self._PARENT_INSTANCE.Head:FindFirstChild('HatAttachment') or rootPart:FindFirstChildWhichIsA('Attachment',true) :: Attachment
 	
 	local VectorForce = Instance.new('VectorForce')
 	self._MAID['VectorForce'] = VectorForce
 	VectorForce.Parent = model.PrimaryPart
 	VectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
 	VectorForce.Attachment0 = modelAttachment
-	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 2), 0)
+	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 4), 0)
 	
 	local linearVelocity = Instance.new('LinearVelocity')
 	self._MAID['LinearVelocity'] = linearVelocity
 	linearVelocity.Parent = model.PrimaryPart
 	linearVelocity.Attachment0 = modelAttachment
 	linearVelocity.VectorVelocity = Vector3.new(0,0,0)
-	linearVelocity.MaxForce = 8
+	linearVelocity.MaxForce = 12
 	
 	local angularVelocity = Instance.new("BodyAngularVelocity")
 	self._MAID['BodyAngularVelocity'] = angularVelocity
@@ -130,14 +154,16 @@ function Balloon:_AttachToCharacter()
 	
 	model.PrimaryPart:SetAttribute('Balloon',true)
 	model.Name = self._PARENT_INSTANCE.Name
-	model.Parent = workspace:FindFirstChild('Ballons')
+	model.Parent = workspace:FindFirstChild('Balloons')
 end
 
 function Balloon:_AutoDestroy()
 	local parnetInstance = self._PARENT_INSTANCE :: Model | Part
-
-	self._MAID['Distroying'] = parnetInstance.Destroying:Connect(function()
-		self:Destroy()
+	
+	self._MAID['Distroying'] = parnetInstance.AncestryChanged:Connect(function()
+		if parnetInstance.Parent == nil then
+			self:Destroy()
+		end
 	end)
 end
 

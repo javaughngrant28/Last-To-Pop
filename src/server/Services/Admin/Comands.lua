@@ -1,3 +1,6 @@
+local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
+
+
 local Comands = {}
 
 function Comands.KillAll()
@@ -14,6 +17,14 @@ function Comands.Kill(player: Player)
 	end
 end
 
+function Comands.Pop(player: Player)
+	local character = player.Character
+	if not character then return end
+
+	local ballonModel = workspace.Balloons:FindFirstChild(character.Name) :: Model
+
+	BalloonAPI.Pop(ballonModel.PrimaryPart)
+end
 
 
 
