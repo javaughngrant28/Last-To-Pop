@@ -15,7 +15,7 @@ local WeaponEvent: NameSpaceEvent.Client = NameSpaceEvent.new('Weapon',{'Shoot'}
 local Maid: MaidModule.Maid = MaidModule.new()
 
 local debounce = false
-local debounceTime = 1
+local debounceTime = 0.6
 
 local CurrentCharacter: Model
 
