@@ -16,7 +16,7 @@ local Maid: MaidModule.Maid = MaidModule.new()
 local CreateSignal = WeaponAPI.CreateSignal()
 local WeaponEvent: NameSpaceEvent.Server = NameSpaceEvent.new('Weapon',{'Shoot'})
 
-local SHOOT_DISTANCE = 100
+local SHOOT_DISTANCE = 500
 
 
 local function CreateWeapon(player: Player)
@@ -39,7 +39,7 @@ local function Shoot(player: Player,tool: Tool, origin: Vector3, dirction: Vecto
     local result = Raycast.Fire(origin,dirction,SHOOT_DISTANCE,{
         player.Character,
         tool,
-        -- loclBalloon,
+        loclBalloon,
     })
 
     local target = result and result.Instance or false

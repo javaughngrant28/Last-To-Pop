@@ -133,14 +133,14 @@ function Balloon:_AttachToCharacter()
 	VectorForce.Parent = model.PrimaryPart
 	VectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
 	VectorForce.Attachment0 = modelAttachment
-	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 4), 0)
+	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 8), 0)
 	
 	local linearVelocity = Instance.new('LinearVelocity')
 	self._MAID['LinearVelocity'] = linearVelocity
 	linearVelocity.Parent = model.PrimaryPart
 	linearVelocity.Attachment0 = modelAttachment
 	linearVelocity.VectorVelocity = Vector3.new(0,0,0)
-	linearVelocity.MaxForce = 12
+	linearVelocity.MaxForce = 40
 	
 	local angularVelocity = Instance.new("BodyAngularVelocity")
 	self._MAID['BodyAngularVelocity'] = angularVelocity
@@ -150,16 +150,16 @@ function Balloon:_AttachToCharacter()
 	
 	ropeConstraint.Attachment0 = rootAttachment
 	ropeConstraint.Attachment1 = modelAttachment
+	ropeConstraint.Length = 2.4
 	ropeConstraint.Enabled = true
 	
-	model.PrimaryPart:SetAttribute('Balloon',true)
 	model.Name = self._PARENT_INSTANCE.Name
+	model.PrimaryPart:SetAttribute('Balloon',true)
 	model.Parent = workspace:FindFirstChild('Balloons')
 end
 
 function Balloon:_AutoDestroy()
 	local parnetInstance = self._PARENT_INSTANCE :: Model | Part
-	
 	self._MAID['Distroying'] = parnetInstance.AncestryChanged:Connect(function()
 		if parnetInstance.Parent == nil then
 			self:Destroy()
@@ -168,7 +168,6 @@ function Balloon:_AutoDestroy()
 end
 
 function Balloon:Destroy()
-
 	self._MAID:Destroy()
 	for index, _ in pairs(self) do
 		self[index] = nil

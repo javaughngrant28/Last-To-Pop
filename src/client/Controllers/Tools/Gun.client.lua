@@ -22,6 +22,10 @@ local CurrentCharacter: Model
 
 local function toolActivated(tool: Tool, muzzle: Part)
     if debounce then return end
+
+    local humanoid = CurrentCharacter:FindFirstChild('Humanoid') :: Humanoid
+    if not humanoid or humanoid.Health <= 0 then return end
+    
     debounce = true
 
     local rootPart = CurrentCharacter:FindFirstChild('HumanoidRootPart') :: Part
