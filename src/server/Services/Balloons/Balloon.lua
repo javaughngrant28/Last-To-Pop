@@ -155,6 +155,8 @@ function Balloon:_AttachToCharacter()
 	
 	model.Name = self._PARENT_INSTANCE.Name
 	model.PrimaryPart:SetAttribute('Balloon',true)
+	model.PrimaryPart.BrickColor =  BrickColor.random()
+	task.wait()
 	model.Parent = workspace:FindFirstChild('Balloons')
 end
 

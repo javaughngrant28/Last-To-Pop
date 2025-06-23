@@ -15,6 +15,7 @@
 export type ClientCallBack = (...any?)->()
 export type ServerCallBack = (player: Player,...any?)->()
 
+local Players = game:GetService('Players')
 local RunService = game:GetService('RunService')
 
 local FOLDER_NAME = 'Events'
@@ -70,6 +71,23 @@ end
 -- SERVER: Fires Event To A Player
 function EventUtil.FireClient(eventName: string, player: Player,...)
 	GENERAL_REMOTE:FireClient(player,eventName,...)
+end
+
+function EventUtil.FireAllClients(eventName: string, ...)
+	GENERAL_REMOTE:FireAllClients(eventName, ...)
+end
+
+function EventUtil.FireClientList(eventName: string, listOfPlayers: {Player}, ...)
+	for _, player in listOfPlayers do
+		GENERAL_REMOTE:FireClient(player, eventName, ...)
+	end
+end
+
+function EventUtil.FireClientAllExcuding(eventName: string, listOfPlayers: {Player}, ...)
+	for _, player in Players:GetChildren() do
+		if table.find(listOfPlayers,player) then continue end
+		GENERAL_REMOTE:FireClient(player, eventName, ...)
+	end
 end
 
 -- SERVER: Receive Events Frome Player

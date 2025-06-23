@@ -1,4 +1,5 @@
 
+local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
@@ -10,17 +11,20 @@ local ToolDetection = require(script.Parent.Parent.Parent.Modules.ToolDetection)
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
 local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterEvents)
+local Raycast = require(game.ReplicatedStorage.Shared.Modules.Raycast)
+local EffectsAPI = require(script.Parent.Parent.Effects.EffectsAPI)
 
 local WeaponEvent: NameSpaceEvent.Client = NameSpaceEvent.new('Weapon',{'Shoot'})
 local Maid: MaidModule.Maid = MaidModule.new()
 
 local debounce = false
 local debounceTime = 0.6
+local DISTANCE = 500
 
 local CurrentCharacter: Model
 
 
-local function toolActivated(tool: Tool, muzzle: Part)
+local function toolActivated(tool: string, muzzle: Part)
     if debounce then return end
 
     local humanoid = CurrentCharacter:FindFirstChild('Humanoid') :: Humanoid
@@ -28,12 +32,14 @@ local function toolActivated(tool: Tool, muzzle: Part)
     
     debounce = true
 
-    local rootPart = CurrentCharacter:FindFirstChild('HumanoidRootPart') :: Part
     local origin = muzzle.CFrame.Position
-    local direction = (Mouse.Hit.Position - muzzle.CFrame.Position).Unit
-    local Balloon = Balloons:FindFirstChild(CurrentCharacter.Name)
+    local mousePosition = Mouse.Hit.Position
+    local lookVector = (mousePosition - origin).Unit
+    local results = Raycast.Fire(origin,lookVector,DISTANCE,{CurrentCharacter, tool})
+    local targetDistance = results and results.Distance or DISTANCE
+    local target = results and results.Instance or nil
     
-    WeaponEvent:FireServer('Shoot',tool,origin,direction,Balloon)
+    WeaponEvent:FireServer('Shoot',target,tool,origin,lookVector,targetDistance)
 
     task.wait(debounceTime)
     debounce = false
