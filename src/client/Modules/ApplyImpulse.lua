@@ -1,7 +1,6 @@
 local ApplyImpulse = {}
 
 function ApplyImpulse.Fire(targetModel: Model, diraction: Vector3, distance: number, duration: number?)
-    print(targetModel,diraction,distance,duration)
     local rootPart = targetModel:FindFirstChild('HumanoidRootPart') or targetModel.PrimaryPart :: Part
 
     task.defer(function()
