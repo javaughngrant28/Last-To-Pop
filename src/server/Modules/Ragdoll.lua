@@ -5,8 +5,8 @@ local RagdolledModels = {} :: {[Model]: true}
 local function ActivateRagdoll(model: Model)
 	RagdolledModels[model] = true
 	
-	local humanoid = model:FindFirstChild('Humanoid') :: Humanoid
-	humanoid.RequiresNeck = false
+	local humanoid = model:FindFirstChildWhichIsA('Humanoid',true) :: Humanoid
+	humanoid.BreakJointsOnDeath = false
 
 	for _, value in ipairs(model:GetDescendants()) do
 		if value.ClassName ~= 'Motor6D' then continue end
@@ -42,10 +42,9 @@ local function DeactivateRagdoll(model: Model)
 		if instance.Name == INSTANCE_NAME then instance:Destroy() continue end
 		if instance.ClassName ~= 'Motor6D' then continue end
 		local moter6D: Motor6D = instance
-		moter6D.Enabled = true 
+		moter6D.Enabled = true
 	end
 	
-	humanoid.RequiresNeck = true
 	humanoid.Sit = false
 	RagdolledModels[model] = nil
 end
@@ -54,7 +53,8 @@ end
 local Ragdoll = {}
 
 function Ragdoll.Enable(target: Model)
-	task.defer(ActivateRagdoll,target)
+	-- task.defer(ActivateRagdoll,target)
+	ActivateRagdoll(target)
 end
 
 -- Return of target is already ragdoll
@@ -64,6 +64,10 @@ end
 
 function Ragdoll.Disable(target: Model)
 	task.defer(DeactivateRagdoll,target)
+end
+
+function Ragdoll.DisableOnTread(target: Model)
+	DeactivateRagdoll(target)
 end
 
 return Ragdoll
