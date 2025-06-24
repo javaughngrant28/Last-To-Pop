@@ -28,7 +28,7 @@ local function Create(attachment: Attachment, owner: Player?)
     end
 
     Maid[Balloon.HITBOX] = Balloon
-    Balloon.MODEl.Parent = BalloonFolder
+    Balloon.MODEL.Parent = BalloonFolder
 end
 
 local function Pop(object: Part)
@@ -37,7 +37,6 @@ local function Pop(object: Part)
     if balloon then
         balloon:Pop()
     end
-
 end
 
 

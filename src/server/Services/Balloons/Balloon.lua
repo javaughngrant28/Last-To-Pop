@@ -11,7 +11,7 @@ local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
 
 
 export type BalloonType = {
-	MODEl: Model,
+	MODEL: Model,
 	HITBOX: Part,
 
 	new: (attachment: Attachment)-> BalloonType,
