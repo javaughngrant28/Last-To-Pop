@@ -24,7 +24,7 @@ local function Create(attachment: Attachment, owner: Player?)
     if owner then
         primaryPart.Anchored = false
         primaryPart:SetNetworkOwner(owner)
-        RemoteUtil:FireClient(owner,'Balloon',Balloon.MODEL)
+        RemoteUtil.FireClient(owner,'Balloon',Balloon.MODEL)
     end
 
     Maid[Balloon.HITBOX] = Balloon
