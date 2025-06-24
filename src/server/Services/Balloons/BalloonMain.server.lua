@@ -1,12 +1,14 @@
 
 
-local Balloons = Instance.new('Folder')
-Balloons.Parent = workspace
-Balloons.Name = 'Balloons'
+local BalloonFolder = Instance.new('Folder')
+BalloonFolder.Parent = workspace
+BalloonFolder.Name = 'Balloons'
+
+local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
+local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 local Balloon = require(script.Parent.Balloon)
 local BalloonAPI = require(script.Parent.BalloonAPI)
-local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 
 local Maid: MaidModule.Maid = MaidModule.new()
 
@@ -22,9 +24,11 @@ local function Create(attachment: Attachment, owner: Player?)
     if owner then
         primaryPart.Anchored = false
         primaryPart:SetNetworkOwner(owner)
+        RemoteUtil:FireClient(owner,'Balloon',Balloon.MODEL)
     end
 
     Maid[Balloon.HITBOX] = Balloon
+    Balloon.MODEl.Parent = BalloonFolder
 end
 
 local function Pop(object: Part)
