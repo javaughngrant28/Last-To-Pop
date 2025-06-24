@@ -15,8 +15,8 @@ local function GetPopSignal(): Signal.SignalType
 end
 
 
-local function Create(object: Model | Part, balloonName: string)
-    CreateSignal:Fire(object,balloonName)
+local function Create(attachment: Attachment, owner: Player?)
+    CreateSignal:Fire(attachment,owner)
 end
 
 local function Pop(balloon: Part)

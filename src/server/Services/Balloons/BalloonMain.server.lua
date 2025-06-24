@@ -14,10 +14,17 @@ local CreateSignal = BalloonAPI._CreateSignal()
 local PopSignal = BalloonAPI._PopSignal()
 
 
+-- Owner prop must be a 'Player' object or leave it nil
+local function Create(attachment: Attachment, owner: Player?)
+    local Balloon = Balloon.new(attachment) :: Balloon.BalloonType
+    local primaryPart = Balloon.MODEL.PrimaryPart :: Part
 
-local function Create(object: Model | Part, balloonName: string)
-    local Ballon = Balloon.new(object,balloonName)
-    Maid[Ballon.MODEL.PrimaryPart] = Ballon 
+    if owner then
+        primaryPart.Anchored = false
+        primaryPart:SetNetworkOwner(owner)
+    end
+
+    Maid[Balloon.HITBOX] = Balloon
 end
 
 local function Pop(object: Part)

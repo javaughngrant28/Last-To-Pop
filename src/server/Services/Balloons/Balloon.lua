@@ -1,19 +1,8 @@
 local Players = game:GetService("Players")
 
-
-export type BalloonType = {
-	MODEl: Model,
-
-	new: (object: Model | Part, modelName: string)-> BalloonType,
-	Pop: ()-> (),
-	Destroy: ()->(),
-}
-
-
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
 local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
-local Ragdoll = require(game.ServerScriptService.Modules.Ragdoll)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 local Ballons = game.ReplicatedStorage.Assets.Balloons
@@ -21,153 +10,130 @@ local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
 
 
 
+export type BalloonType = {
+	MODEl: Model,
+	HITBOX: Part,
+
+	new: (attachment: Attachment)-> BalloonType,
+	Pop: ()-> (),
+	Destroy: ()->(),
+}
+
+
+
 local Balloon = {}
 Balloon.__index = Balloon
 
-Balloon.MODEL = nil
 
-Balloon._REFRENCE_MODEL = nil
-Balloon._ROOT_PART = nil
-Balloon._PARENT_INSTANCE = nil
 Balloon._PLAYER = nil
-Balloon._POP_FORCE = 8
-
 Balloon._MAID = nil
 
-function Balloon.new(object: Model | Part, modelName: string)
+
+Balloon.SIZE = Vector3.new(3.8,3.8,3.8)
+Balloon.HITBOX_SCALE = 1.6
+Balloon.ROPE_LENTH = 2.6
+
+Balloon.MODEL = nil
+Balloon.HITBOX = nil
+
+
+
+function Balloon.new(attachment: Attachment): BalloonType
 	local self = setmetatable({}, Balloon)
-	
-	self:__Constructor(object, modelName)
+	self:__Constructor(attachment)
+
 	return self
 end
 
 
-function Balloon:__Constructor(object: Model | Part, modelName: string)
-
-	assert(object and object:IsA('BasePart') or object:IsA('Model'),`{object} Invalid`)
-	
-	if object:IsA('Model') then
-		assert(object.PrimaryPart,`{object} Model Has No PrimaryPart`)
-	end
-
-	local BalloonModel = Ballons:FindFirstChild(modelName) :: Model
-	assert(BalloonModel,`{object} {modelName} Balloon Model Not Found`)
-	assert(
-		BalloonModel:IsA('Model') and BalloonModel.PrimaryPart,
-		`{BalloonModel} Has No PrimaryPart Or Is Not A Model`
-	)
-
+function Balloon:__Constructor(attachment: Attachment)
+	assert(attachment and attachment:IsA('Attachment'),`{attachment} Invalid Attachment`)
 	self._MAID = MaidModule.new()
-	self._PLAYER = Players:GetPlayerFromCharacter(object) or nil
-	self._REFRENCE_MODEL = BalloonModel
-	self._ROOT_PART = object:IsA('Model') and object:FindFirstChild('HumanoidRootPart')  or object:IsA('Model') and object.PrimaryPart or object
-	self._PARENT_INSTANCE = object
 
-	self:_AutoDestroy()
-	self:_AttachToCharacter()
+	local model = Instance.new('Model')
+	model.Name = 'Balloon'
+	model.Parent = workspace
+	self.MODEL = model
+	self._MAID['Model'] = model
+
+	local sphere = self:_CreateBall()
+	sphere.Position = attachment.WorldCFrame.Position + Vector3.new(0,self.ROPE_LENTH + self.SIZE.Y / 2,0)
+	sphere.Parent = model
+	model.PrimaryPart = sphere
+	self._MAID['Sphere'] = sphere
+
+	local rope = self:_CreateRope(sphere:FindFirstChildWhichIsA('Attachment',true),attachment,self.ROPE_LENTH)
+	rope.Parent = sphere
+	self._MAID['RopeConstraint'] = rope
+
+	local hitbox = self:_CreateHitbox(sphere,self.HITBOX_SCALE)
+	hitbox.Parent = model
+	self.HITBOX = hitbox
+	self._MAID['Hitbox'] = hitbox
 end
 
 
 function Balloon:Pop()
-
-	local model = self._MAID['Model'] :: Model
-	local forceFeild = self._PARENT_INSTANCE:FindFirstChildWhichIsA('ForceField')
-	local positionPopped = model.PrimaryPart.CFrame.Position
-	local popSound = model:FindFirstChild('Pop',true) :: Sound?
-
-	if forceFeild then return end
-	
-	if popSound then
-		SoundUtil.PlayAtPosition(popSound,positionPopped)
-	end
-
-	ParticleUtil.EmitParticlesAtPosition(Effect,positionPopped)
-
-	model.PrimaryPart:SetAttribute('Balloon',nil)
-
-	for _, part:BasePart in model:GetChildren()do
-		if part:IsA('BasePart') then
-			part.Transparency = 1
-			part.CanTouch = false
-			part.CanCollide = false
-		end
-	end
-
-	self._MAID['VectorForce'] = nil
-	self._MAID['LinearVelocity'] = nil
-
-	local humanoidRootPart = self._PARENT_INSTANCE:FindFirstChild('HumanoidRootPart') :: Part
-	local humanoid = self._PARENT_INSTANCE:FindFirstChildWhichIsA('Humanoid',true) :: Humanoid?
-	local player = self._PLAYER :: Player?
-
-	-- if humanoidRootPart then
-	-- 	Ragdoll.Enable(self._PARENT_INSTANCE)
-	-- 	task.delay(1,Ragdoll.Disable,self._PARENT_INSTANCE)
-	-- end
-
-	if humanoid then
-		humanoid.Health = 0
-	end
-
-	if player then
-		RemoteUtil.FireClient('Pop',player,positionPopped,self._POP_FORCE)
-	end
-	
+	print('POP')
 end
 
 
-function Balloon:_AttachToCharacter()
-	local model = self._REFRENCE_MODEL:Clone() :: Model
-	self._MAID['Model'] = model
-	self.MODEL = model
-	
-	local ropeConstraint = model:FindFirstChildWhichIsA('RopeConstraint',true) :: RopeConstraint
-	local modelAttachment = model.PrimaryPart:FindFirstChildWhichIsA('Attachment',true	) :: Attachment
-	local modelMass =  model.PrimaryPart:GetMass()
-	
-	local rootPart = self._ROOT_PART :: Part
-	local rootAttachment = self._PARENT_INSTANCE:FindFirstChild('Head') and self._PARENT_INSTANCE.Head:FindFirstChild('HatAttachment') or rootPart:FindFirstChildWhichIsA('Attachment',true) :: Attachment
-	
-	local VectorForce = Instance.new('VectorForce')
-	self._MAID['VectorForce'] = VectorForce
-	VectorForce.Parent = model.PrimaryPart
-	VectorForce.RelativeTo = Enum.ActuatorRelativeTo.World
-	VectorForce.Attachment0 = modelAttachment
-	VectorForce.Force = Vector3.new(0, workspace.Gravity * (modelMass * 8), 0)
-	
-	local linearVelocity = Instance.new('LinearVelocity')
-	self._MAID['LinearVelocity'] = linearVelocity
-	linearVelocity.Parent = model.PrimaryPart
-	linearVelocity.Attachment0 = modelAttachment
-	linearVelocity.VectorVelocity = Vector3.new(0,0,0)
-	linearVelocity.MaxForce = 40
-	
-	local angularVelocity = Instance.new("BodyAngularVelocity")
-	self._MAID['BodyAngularVelocity'] = angularVelocity
-	angularVelocity.AngularVelocity = Vector3.new()
-	angularVelocity.MaxTorque = Vector3.new(4000, 4000, 4000)
-	angularVelocity.Parent = model.PrimaryPart
-	
-	ropeConstraint.Attachment0 = rootAttachment
-	ropeConstraint.Attachment1 = modelAttachment
-	ropeConstraint.Length = 2.4
-	ropeConstraint.Enabled = true
-	
-	model.Name = self._PARENT_INSTANCE.Name
-	model.PrimaryPart:SetAttribute('Balloon',true)
-	model.PrimaryPart.BrickColor =  BrickColor.random()
-	task.wait()
-	model.Parent = workspace:FindFirstChild('Balloons')
+function Balloon:_CreateBall(): Part
+	local sphere = Instance.new("Part")
+    sphere.Shape = Enum.PartType.Ball
+    sphere.Size = self.SIZE
+	sphere.CanCollide = false
+	sphere.CanTouch = false
+	sphere.CanQuery = false
+	sphere.CastShadow = false
+    sphere.Anchored = true
+	sphere.Massless = true
+	sphere.Transparency = 0
+    sphere.Color = Color3.fromRGB(255, 0, 0)
+    
+    local attachment = Instance.new("Attachment")
+    attachment.Name = "Attachment1"
+    attachment.Position = Vector3.new(0, -self.SIZE.Y / 2, 0)
+    attachment.Parent = sphere
+    
+    return sphere
 end
 
-function Balloon:_AutoDestroy()
-	local parnetInstance = self._PARENT_INSTANCE :: Model | Part
-	self._MAID['Distroying'] = parnetInstance.AncestryChanged:Connect(function()
-		if parnetInstance.Parent == nil then
-			self:Destroy()
-		end
-	end)
+function Balloon:_CreateRope(a1: Attachment, a0: Attachment, length: number): RopeConstraint
+	local rope = Instance.new("RopeConstraint")
+    rope.Attachment0 = a0
+    rope.Attachment1 = a1
+    rope.Length = length
+    rope.Thickness = 0.02
+    rope.Color = BrickColor.White()
+	rope.Visible = true
+	return rope
 end
+
+function Balloon:_CreateHitbox(part: Part, scale: number?): Part
+	local scale = scale or 1
+
+	local hitbox = Instance.new("Part")
+    hitbox.Name = "Hitbox"
+    hitbox.Anchored = false
+    hitbox.CanCollide = false
+	hitbox.CastShadow = false
+    hitbox.Massless = true
+    hitbox.Size = part.Size * scale
+	hitbox.Transparency = 0.8
+	hitbox:SetAttribute('Balloon',true)
+
+	hitbox.CFrame = part.CFrame
+
+	local constraint = Instance.new("WeldConstraint")
+    constraint.Part0 = part
+    constraint.Part1 = hitbox
+    constraint.Parent = hitbox
+
+	return hitbox
+end
+
+
 
 function Balloon:Destroy()
 	self._MAID:Destroy()
