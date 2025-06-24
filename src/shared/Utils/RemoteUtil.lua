@@ -69,7 +69,7 @@ end
 --- SERVER METHODS ---
 
 -- SERVER: Fires Event To A Player
-function EventUtil.FireClient(eventName: string, player: Player,...)
+function EventUtil.FireClient(player: Player,eventName: string,...)
 	GENERAL_REMOTE:FireClient(player,eventName,...)
 end
 
