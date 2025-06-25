@@ -20,7 +20,7 @@ Maid.ClassName = "Maid"
 --- Returns a new Maid object
 -- @constructor Maid.new()
 -- @treturn Maid
-function Maid.new()
+function Maid.new(): Maid
 	return setmetatable({
 		_tasks = {}
 	}, Maid)
