@@ -31,7 +31,8 @@ Balloon._MAID = nil
 
 Balloon.SIZE = Vector3.new(3.8,3.8,3.8)
 Balloon.HITBOX_SCALE = 1.6
-Balloon.ROPE_LENTH = 2.6
+Balloon.HIGHT_OFFSET = 5
+Balloon.BEAM_WDITH = 0.1
 
 Balloon.MODEL = nil
 Balloon.HITBOX = nil
@@ -57,14 +58,14 @@ function Balloon:__Constructor(attachment: Attachment)
 	self._MAID['Model'] = model
 
 	local sphere = self:_CreateBall()
-	sphere.Position = attachment.WorldCFrame.Position + Vector3.new(0,self.ROPE_LENTH + self.SIZE.Y / 2,0)
+	sphere.Position = attachment.WorldCFrame.Position + Vector3.new(0,self.HIGHT_OFFSET + self.SIZE.Y / 2,0)
 	sphere.Parent = model
 	model.PrimaryPart = sphere
 	self._MAID['Sphere'] = sphere
 
-	local rope = self:_CreateRope(sphere:FindFirstChildWhichIsA('Attachment',true),attachment,self.ROPE_LENTH)
-	rope.Parent = sphere
-	self._MAID['RopeConstraint'] = rope
+	local beam = self:_CreateBeam(sphere:FindFirstChildWhichIsA('Attachment',true),attachment,self.BEAM_SIZE)
+	beam.Parent = sphere
+	self._MAID['Beam'] = beam
 
 	local hitbox = self:_CreateHitbox(sphere,self.HITBOX_SCALE)
 	hitbox.Parent = model
@@ -99,15 +100,19 @@ function Balloon:_CreateBall(): Part
     return sphere
 end
 
-function Balloon:_CreateRope(a1: Attachment, a0: Attachment, length: number): RopeConstraint
-	local rope = Instance.new("RopeConstraint")
-    rope.Attachment0 = a0
-    rope.Attachment1 = a1
-    rope.Length = length
-    rope.Thickness = 0.02
-    rope.Color = BrickColor.White()
-	rope.Visible = true
-	return rope
+function Balloon:_CreateBeam(a1: Attachment, a0: Attachment, length: number): Beam
+	local beam = Instance.new('Beam')
+	beam.Color = ColorSequence.new(Color3.new(1, 1, 1))
+	beam.LightInfluence = 0
+	beam.LightEmission = 1
+	beam.Segments = 1
+	beam.Transparency = NumberSequence.new(0)
+	beam.Attachment0 = a0
+	beam.Attachment1 = a1
+	beam.FaceCamera = true
+	beam.Width0 = self.BEAM_WDITH
+	beam.Width1 = self.BEAM_WDITH
+	return beam
 end
 
 function Balloon:_CreateHitbox(part: Part, scale: number?): Part
