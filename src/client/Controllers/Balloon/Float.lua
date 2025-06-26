@@ -35,13 +35,13 @@ local function MakeObjectFloat(hoverPart: Part, object: Part, maxDistance: numbe
 
 	Maid:GiveTask(object.AncestryChanged:Connect(function(_, parent)
 		if not parent then
-			Maid[object]:Destroy()
+			Maid:Destroy()
 		end
 	end))
 
 	Maid:GiveTask(hoverPart.AncestryChanged:Connect(function(_, parent)
 		if not parent then
-			Maid[object]:Destroy()
+			Maid:Destroy()
 		end
 	end))
 end
