@@ -14,9 +14,9 @@ export type BalloonType = {
 	MODEL: Model,
 	HITBOX: Part,
 
-	new: (attachment: Attachment)-> BalloonType,
+	new: (part: Part)-> BalloonType,
 	Pop: ()-> (),
-	Destroy: ()->(),
+	Destroy: (BalloonType)->(),
 }
 
 
@@ -36,19 +36,20 @@ Balloon.BEAM_WDITH = 0.1
 
 Balloon.MODEL = nil
 Balloon.HITBOX = nil
+Balloon.PART = nil
 
 
 
-function Balloon.new(attachment: Attachment): BalloonType
+function Balloon.new(part: Part): BalloonType
 	local self = setmetatable({}, Balloon)
-	self:__Constructor(attachment)
+	self:__Constructor(part)
 
 	return self
 end
 
 
-function Balloon:__Constructor(attachment: Attachment)
-	assert(attachment and attachment:IsA('Attachment'),`{attachment} Invalid Attachment`)
+function Balloon:__Constructor(part: Part)
+	assert(part and part:IsA('BasePart'),`{part} Invalid BasePart`)
 	self._MAID = MaidModule.new()
 
 	local model = Instance.new('Model')
@@ -57,13 +58,18 @@ function Balloon:__Constructor(attachment: Attachment)
 	self.MODEL = model
 	self._MAID['Model'] = model
 
+	local attachment = Instance.new('Attachment')
+	attachment.Name = 'BalloonAttachment'
+	attachment.Parent = part
+	attachment.CFrame = CFrame.new(0,part.Size.Y / 2,0)
+
 	local sphere = self:_CreateBall()
 	sphere.Position = attachment.WorldCFrame.Position + Vector3.new(0,self.HIGHT_OFFSET + self.SIZE.Y / 2,0)
 	sphere.Parent = model
 	model.PrimaryPart = sphere
 	self._MAID['Sphere'] = sphere
 
-	local beam = self:_CreateBeam(sphere:FindFirstChildWhichIsA('Attachment',true),attachment,self.BEAM_SIZE)
+	local beam = self:_CreateBeam(sphere:FindFirstChildWhichIsA('Attachment',true),attachment)
 	beam.Parent = sphere
 	self._MAID['Beam'] = beam
 
@@ -100,7 +106,7 @@ function Balloon:_CreateBall(): Part
     return sphere
 end
 
-function Balloon:_CreateBeam(a1: Attachment, a0: Attachment, length: number): Beam
+function Balloon:_CreateBeam(a1: Attachment, a0: Attachment): Beam
 	local beam = Instance.new('Beam')
 	beam.Color = ColorSequence.new(Color3.new(1, 1, 1))
 	beam.LightInfluence = 0
@@ -125,7 +131,7 @@ function Balloon:_CreateHitbox(part: Part, scale: number?): Part
 	hitbox.CastShadow = false
     hitbox.Massless = true
     hitbox.Size = part.Size * scale
-	hitbox.Transparency = 0.8
+	hitbox.Transparency = 1
 	hitbox:SetAttribute('Balloon',true)
 
 	hitbox.CFrame = part.CFrame

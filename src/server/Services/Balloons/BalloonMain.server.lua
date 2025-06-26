@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 
 
 local BalloonFolder = Instance.new('Folder')
@@ -14,33 +15,47 @@ local Maid: MaidModule.Maid = MaidModule.new()
 
 local CreateSignal = BalloonAPI._CreateSignal()
 local PopSignal = BalloonAPI._PopSignal()
+local DestroySignal = BalloonAPI._DestroySignal()
 
 
--- Owner prop must be a 'Player' object or leave it nil
-local function Create(attachment: Attachment, owner: Player?)
-    local Balloon = Balloon.new(attachment) :: Balloon.BalloonType
+
+local function Create(owner: Part)
+    local Balloon = Balloon.new(owner) :: Balloon.BalloonType
     local primaryPart = Balloon.MODEL.PrimaryPart :: Part
 
-    if owner then
+    local character = owner.Parent
+    local player = Players:GetPlayerFromCharacter(character)
+
+    if player then
         primaryPart.Anchored = false
-        primaryPart:SetNetworkOwner(owner)
-        RemoteUtil.FireClient(owner,'Balloon',Balloon.MODEL)
+        primaryPart:SetNetworkOwner(player)
+        RemoteUtil.FireClient(player,'Balloon',Balloon.MODEL)
     end
 
+    Maid[owner] = Balloon
     Maid[Balloon.HITBOX] = Balloon
     Balloon.MODEL.Parent = BalloonFolder
 end
 
-local function Pop(object: Part)
-    local balloon = Maid[object] :: Balloon.BalloonType?
+local function Pop(hitBox: Part)
+    local balloon = Maid[hitBox] :: Balloon.BalloonType?
     
     if balloon then
         balloon:Pop()
     end
 end
 
+local function Destroy(owner: Part)
+    local Balloon = Maid[owner] :: Balloon.BalloonType
+    if Balloon then
+        Balloon:Destroy()
+    end
+end
+
+
 
 PopSignal:Connect(Pop)
+DestroySignal:Connect(Destroy)
 CreateSignal:Connect(Create)
 
 
