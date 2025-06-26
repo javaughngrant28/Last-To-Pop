@@ -24,7 +24,7 @@ local function onCharacterDied(character: Model)
 end
 
 local function onCharacterAdded(_,player: Player)
-    Loadouts.Create(player,'PlayerBalloon')
+    Loadouts.Create(player,'Combat')
 end
 
 local function onPlayerAdded(player: Player)

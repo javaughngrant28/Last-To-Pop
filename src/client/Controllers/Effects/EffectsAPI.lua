@@ -20,4 +20,3 @@ return {
     Fire = Fire,
     _FireSignal = GetFireSignal,
 }
-

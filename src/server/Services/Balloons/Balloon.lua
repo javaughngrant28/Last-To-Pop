@@ -6,6 +6,7 @@ local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 local Ballons = game.ReplicatedStorage.Assets.Balloons
+local PopSound = game.ReplicatedStorage.Assets.Sounds.Balloon.Pop1
 local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
 
 
@@ -27,6 +28,8 @@ Balloon.__index = Balloon
 
 Balloon._PLAYER = nil
 Balloon._MAID = nil
+
+Balloon._POP_FORCE = 12
 
 
 Balloon.SIZE = Vector3.new(3.8,3.8,3.8)
@@ -50,7 +53,9 @@ end
 
 function Balloon:__Constructor(part: Part)
 	assert(part and part:IsA('BasePart'),`{part} Invalid BasePart`)
+	
 	self._MAID = MaidModule.new()
+	self._PLAYER = Players:GetPlayerFromCharacter(part.Parent)
 
 	local model = Instance.new('Model')
 	model.Name = 'Balloon'
@@ -81,7 +86,21 @@ end
 
 
 function Balloon:Pop()
-	print('POP')
+	local model = self.MODEL:: Model
+	local positionPopped = model.PrimaryPart.CFrame.Position
+
+	SoundUtil.PlayAtPosition(PopSound,positionPopped)
+	ParticleUtil.EmitParticlesAtPosition(Effect,positionPopped)
+
+	model:Destroy()
+
+	if self._PLAYER then
+		local character = self._PLAYER.Character
+		local humanoid = character:FindFirstChild('Humanoid') :: Humanoid
+
+		humanoid.Health = 0
+		RemoteUtil.FireClient(self._PLAYER,'Pop',positionPopped,self._POP_FORCE)
+	end
 end
 
 

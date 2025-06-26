@@ -27,6 +27,7 @@ local function Create(owner: Part)
     local player = Players:GetPlayerFromCharacter(character)
 
     if player then
+        Balloon.MODEL.Name = player.Name
         primaryPart.Anchored = false
         primaryPart:SetNetworkOwner(player)
         RemoteUtil.FireClient(player,'Balloon',Balloon.MODEL)

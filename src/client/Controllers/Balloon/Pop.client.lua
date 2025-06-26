@@ -1,5 +1,3 @@
-
-
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterEvents)
 local ApplyImpulse = require(script.Parent.Parent.Parent.Modules.ApplyImpulse)

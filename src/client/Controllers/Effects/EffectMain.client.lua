@@ -13,13 +13,15 @@ local Effects = {} :: {
     }
 }
 
-for _, child: ModuleScript in script:GetChildren() do
+for _, child: ModuleScript in script.Parent:GetChildren() do
     if not child:IsA('ModuleScript') then continue end
+    if child.Name == 'EffectsAPI' then continue end
+    
     local effectModuel = require(child)
 
     if not effectModuel['Fire'] then
         warn(`{child.Name} Effect Module Does Not Have 'Fire' Founction`)
-        continue 
+        continue
     end
 
     Effects[child.Name] = effectModuel
@@ -37,5 +39,4 @@ end
 
 FireSignal:Connect(onFire)
 RemoteUtil.OnClient('Effects',onFire)
-
 

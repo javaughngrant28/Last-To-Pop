@@ -1,8 +1,11 @@
 
-local BalloonAPI = require(script.Parent.Parent.Balloons.BalloonAPI)
+
+local Loadouts = require(game.ServerScriptService.Modules.Loadouts.LoadoutManager)
+
+
 
 local function CleanUpAndRemoveCharacter(character: Model, player: Player)
-    BalloonAPI.Destroy(character:FindFirstChild('Head'))
+   Loadouts.Remove(player.Name)
 
     task.wait(1)
 

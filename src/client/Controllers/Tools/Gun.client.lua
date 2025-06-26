@@ -1,66 +1,55 @@
-
-local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
-
 local Player = Players.LocalPlayer
-local Mouse = Player:GetMouse()
-local Balloons = workspace:WaitForChild('Balloons',10) :: Folder
 
-
+local Mouse = require(script.Parent.Parent.Parent.Modules.Mouse)
 local ToolDetection = require(script.Parent.Parent.Parent.Modules.ToolDetection)
-local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
+local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterEvents)
-local Raycast = require(game.ReplicatedStorage.Shared.Modules.Raycast)
-local EffectsAPI = require(script.Parent.Parent.Effects.EffectsAPI)
 
-local WeaponEvent: NameSpaceEvent.Client = NameSpaceEvent.new('Weapon',{'Shoot'})
 local Maid: MaidModule.Maid = MaidModule.new()
+local GunEvent: NameSpaceEvent.Client = NameSpaceEvent.new('Gun',{'Shoot'})
 
-local debounce = false
-local debounceTime = 0.6
-local DISTANCE = 500
+local Balloons = workspace:WaitForChild('Balloons')
 
-local CurrentCharacter: Model
+local Debounce = false
+local DebounceTime = 0.6
 
 
-local function toolActivated(tool: string, muzzle: Part)
-    if debounce then return end
 
-    local humanoid = CurrentCharacter:FindFirstChild('Humanoid') :: Humanoid
-    if not humanoid or humanoid.Health <= 0 then return end
-    
-    debounce = true
+local function toolActivated(tool: Tool, balloonFound: Model)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {
+        tool,
+        Player.Character,
+    }
 
-    local origin = muzzle.CFrame.Position
-    local mousePosition = Mouse.Hit.Position
-    local lookVector = (mousePosition - origin).Unit
-    local results = Raycast.Fire(origin,lookVector,DISTANCE,{CurrentCharacter, tool})
-    local targetDistance = results and results.Distance or DISTANCE
-    local target = results and results.Instance or nil
-    
-    WeaponEvent:FireServer('Shoot',target,tool,origin,lookVector,targetDistance)
+    local mousePositsion = Mouse.GetPosition(raycastParams)
 
-    task.wait(debounceTime)
-    debounce = false
+    GunEvent:FireServer('Shoot',tool,mousePositsion,balloonFound)
 end
 
+
 local function onToolAdded(tool: Tool)
-    repeat
-        task.wait(0.4)
-    until tool:FindFirstChild('Muzzle',true)
+    local character = Player.Character :: Model
+    local humanoid = character:FindFirstChild('Humanoid') :: Humanoid
+    local balloonFound = Balloons:WaitForChild(character.Name,20)
 
-    local muzzle = tool:FindFirstChild('Muzzle',true)
-    assert(muzzle,`{tool} has no muzzle`)
+    Maid[tool.Name..' Activate'] =  tool.Activated:Connect(function()
+        if humanoid.Health <= 0 then return end
+        if Debounce then return end
+        Debounce = true
 
-    Maid[tool.Name..'Activated'] = tool.Activated:Connect(function()
-        toolActivated(tool,muzzle)
+        toolActivated(tool,balloonFound)
+        
+        task.wait(DebounceTime)
+        Debounce = false
     end)
 end
 
-local function onCharacterAdded(character: Model)
+local function onCharacterAdded()
     ToolDetection.new(onToolAdded)
-    CurrentCharacter = character
 end
 
 local function onCharacterRemove()
