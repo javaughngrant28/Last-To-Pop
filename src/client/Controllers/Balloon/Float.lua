@@ -15,12 +15,13 @@ local function MakeObjectFloat(hoverPart: Part, object: Part, maxDistance: numbe
 
 	local attachment0 = Instance.new("Attachment")
 	Maid['a0'] = attachment0
-	attachment0.Name = "Attachment0"
+	attachment0.Name = "Att0"
 	attachment0.Parent = hoverPart
+	attachment0.CFrame = CFrame.new(0,maxDistance,0)
 
 	local attachment1 = Instance.new("Attachment")
 	Maid['a1'] = attachment1
-	attachment1.Name = "Attachment1"
+	attachment1.Name = "Att1"
 	attachment1.Parent = object
 
 	local alignPosition = Instance.new("AlignPosition")
