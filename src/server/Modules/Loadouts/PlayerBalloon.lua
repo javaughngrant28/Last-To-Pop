@@ -48,7 +48,9 @@ end
 
 
 function PlayerBalloon:Destroy()
+    self:DestroyBalloon()
     self._MAID:Destroy()
+
     for index, _ in pairs(self) do
          self[index] = nil
      end
