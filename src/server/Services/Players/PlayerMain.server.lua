@@ -16,7 +16,6 @@ local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
 
 local function onCharacterDied(character: Model, player: Player)
-    print('Died')
 
     task.wait(3)
     CharacterCleanup.Fire(character,player)
@@ -24,7 +23,7 @@ local function onCharacterDied(character: Model, player: Player)
 end
 
 local function onCharacterAdded(_,player: Player)
-    Loadouts.Create(player,'Combat')
+    print(player,'Character Added')
 end
 
 local function onPlayerAdded(player: Player)
@@ -38,7 +37,7 @@ local function onPlayerAdded(player: Player)
     CharacterEvents.Died(onCharacterDied,player)
 
     task.wait(4)
-    player:LoadCharacter()
+    Loadouts.Create(player,'LobbyCharacter')
 end
 
 local function onPlayerRemoving(player: Player)
