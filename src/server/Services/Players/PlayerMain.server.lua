@@ -15,8 +15,8 @@ local PLayerLoadedSignal = PlayerAPI.GetPlayerLoadedSignal()
 local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
 
-local function onCharacterDied(character: Model)
-    local player = Players:GetPlayerFromCharacter(character) :: Player
+local function onCharacterDied(character: Model, player: Player)
+    print('Died')
 
     task.wait(3)
     CharacterCleanup.Fire(character,player)

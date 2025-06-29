@@ -54,6 +54,7 @@ end
 function Balloon:__Constructor(part: Part)
 	assert(part and part:IsA('BasePart'),`{part} Invalid BasePart`)
 	
+	self.PART = part
 	self._MAID = MaidModule.new()
 	self._PLAYER = Players:GetPlayerFromCharacter(part.Parent)
 
@@ -82,6 +83,8 @@ function Balloon:__Constructor(part: Part)
 	hitbox.Parent = model
 	self.HITBOX = hitbox
 	self._MAID['Hitbox'] = hitbox
+
+	self:_AutoCleanup()
 end
 
 
@@ -103,6 +106,16 @@ function Balloon:Pop()
 	end
 end
 
+
+function Balloon:_AutoCleanup()
+	local Part = self.PART :: Part
+
+	Part.AncestryChanged:Connect(function(_, parent)
+		if parent == nil then
+			self:Destroy()
+		end
+	end)
+end
 
 function Balloon:_CreateBall(): Part
 	local sphere = Instance.new("Part")
@@ -166,7 +179,10 @@ end
 
 
 function Balloon:Destroy()
-	self._MAID:Destroy()
+	if self['_MAID'] then
+		self._MAID:Destroy()
+	end
+
 	for index, _ in pairs(self) do
 		self[index] = nil
 	end

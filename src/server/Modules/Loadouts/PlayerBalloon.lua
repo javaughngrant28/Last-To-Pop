@@ -28,7 +28,7 @@ function PlayerBalloon:__Constructor(player: Player)
     assert(player.Character,`{player} Has No Character`)
 
     local humanoid = self._CHARACTER:FindFirstChildWhichIsA('Humanoid',true) :: Humanoid
-	humanoid.RequiresNeck = false
+	humanoid.BreakJointsOnDeath = false
     
     self:CreateBalloon()
 end
@@ -42,7 +42,7 @@ function PlayerBalloon:CreateBalloon()
 end
 
 function PlayerBalloon:DestroyBalloon()
-    BalloonAPI.Destroy(self._CHARACTER.Head)
+    BalloonAPI.Destroy(self._CHARACTER:FindFirstChild('Head'))
 end
 
 
