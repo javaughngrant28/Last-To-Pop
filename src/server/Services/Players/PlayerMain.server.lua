@@ -19,7 +19,7 @@ local function onCharacterDied(character: Model, player: Player)
 
     task.wait(3)
     CharacterCleanup.Fire(character,player)
-    player:LoadCharacter()
+    Loadouts.Create(player,'LobbyCharacter')
 end
 
 local function onCharacterAdded(_,player: Player)

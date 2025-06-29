@@ -3,12 +3,9 @@ local ScreenGuiUtil = require(game.ReplicatedStorage.Shared.Utils.ScreenGuiUtil)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 local function Countdown(textLabel: TextLabel, startedTime: number, goalTime: number, text: string?)
-    local duration = goalTime - startedTime
-
-    while textLabel and textLabel.Parent and duration > 0 do
-        textLabel.Text = text and `{text}{tostring(duration)}` or tostring(duration)
+    while textLabel and textLabel.Parent and (goalTime - os.time()) > 0 do
+        textLabel.Text = text and `{text}{tostring(goalTime - os.time())}` or tostring(goalTime - os.time())
         task.wait(1)
-        duration -= 1
     end
 end
 

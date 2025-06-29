@@ -1,6 +1,7 @@
 
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local PlayerBalloon = require(script.Parent.PlayerBalloon)
+local SpawnCharacter = require(game.ServerScriptService.Components.SpawnCharacter)
 
 local Tools = game.ReplicatedStorage.Assets.Tools
 
@@ -25,6 +26,9 @@ end
 function Combat:__Constructor(player: Player)
     self._MAID = MaidModule.new()
     self._PLAYER = player
+
+    local mapFolder = workspace:FindFirstChild('Map')
+    SpawnCharacter.Spawn(self._PLAYER,mapFolder:FindFirstChild('SpawnLoactions'))
 
     local Balloon = PlayerBalloon.new(player)
     self._PLAYER_BALLOON = Balloon

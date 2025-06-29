@@ -18,6 +18,8 @@ export type PlayerDataInstancesType = {
 	Currency: {
 		Coins: number
 	},
+
+	IsPlaying: boolean
 }
 
 
@@ -39,6 +41,8 @@ PlayerDataInstances.Get = function() : PlayerDataInstancesType
 		Currency = {
 			Coins = 10,
 		},
+
+		IsPlaying = false,
 	}
 end
 

@@ -18,11 +18,17 @@ function GUICountdown.Create(screen: ScreenGui | string, duration: number, text:
         ScreenGuiUtil.RemoveFromAllPlayers(screen)
     end
 
-    if yeiled then
-        task.wait(duration)
+    local function RunTime()
+        while goalTime - os.time() > 0 do
+            task.wait(1)
+        end
         Destroy()
+    end
+
+    if yeiled then
+        RunTime()
         else
-            task.delay(duration,Destroy)
+            task.spawn(RunTime)
     end
 end
 
