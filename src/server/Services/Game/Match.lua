@@ -6,9 +6,9 @@ local participatingPlayers = {} :: {Player}
 
 
 
-local function UpdatePlayerLoadout(player: Player)
+local function UpdatePlayerLoadout(player: Player,loadoutName: string)
     Loadouts.Remove(player.Name)
-    Loadouts.Create(player,'Combat')
+    Loadouts.Create(player,loadoutName)
 end
 
 local function AddLobbyCharactersToMatch()
@@ -20,7 +20,7 @@ local function AddLobbyCharactersToMatch()
         table.insert(participatingPlayers,player)
 
         if not player.Character then continue end
-        UpdatePlayerLoadout(player)
+        UpdatePlayerLoadout(player,'Combat')
     end
 end
 
@@ -35,6 +35,20 @@ local function CharacterDied(player: Player)
     end
 end
 
+local function EndMatch()
+    for _, player: Player in Players:GetChildren() do
+         local isPlaying  = player:FindFirstChild('IsPlaying') :: BoolValue
+         local hearts = player:FindFirstChild('Hearts') :: NumberValue
+         
+         if not isPlaying then continue end
+         if isPlaying.Value and player.Character then
+            UpdatePlayerLoadout(player,'LobbyCharacter')
+        end
+        
+        hearts.Value = 2
+    end
+end
+
 
 function StarMatch()
     AddLobbyCharactersToMatch()
@@ -43,4 +57,5 @@ end
 return {
     Start = StarMatch,
     CharacterDied = CharacterDied,
+    End = EndMatch,
 }

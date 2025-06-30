@@ -29,7 +29,7 @@ Balloon.__index = Balloon
 Balloon._PLAYER = nil
 Balloon._MAID = nil
 
-Balloon._POP_FORCE = 12
+Balloon._POP_FORCE = 8
 
 
 Balloon.SIZE = Vector3.new(3.8,3.8,3.8)

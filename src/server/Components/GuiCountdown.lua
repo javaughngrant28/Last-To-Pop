@@ -10,7 +10,7 @@ function GUICountdown.Create(screen: ScreenGui | string, duration: number, text:
     local goalTime = startedTime + duration
 
     connection = ScreenGuiUtil.AddToAllPlayersWithConnection(screen,function(player: Player, screen: ScreenGui)
-        RemoteUtil.FireClient(player,'AnimateCountdownLable',screen,startedTime,goalTime,text)
+        RemoteUtil.FireClient(player,'AnimateCountdownLable',screen,goalTime,text)
     end)
 
     local function Destroy()

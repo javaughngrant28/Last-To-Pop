@@ -10,20 +10,25 @@ local CharacterDiedSignalInMatch = MatchAPI._CharacterDiedSignal()
 
 local GameState : StringValue = game.ReplicatedStorage.GameState
 
-local INTERMISSION_TIME = 20
-local MATCH_TIME = 30
+local INTERMISSION_TIME = 240
+local MATCH_TIME = 240
 
 
 
 local function Intermission()
     GameState.Value = 'Intermission'
-    GuiCountdown.Create('Intermission',INTERMISSION_TIME,'Intermission ',true)
+    GuiCountdown.Create('Timer',INTERMISSION_TIME,'Intermission ',true)
 end
 
 local function StartMatch()
     GameState.Value = 'Match'
     Match.Start()
-    GuiCountdown.Create('Intermission',MATCH_TIME,nil,true)
+
+    GuiCountdown.Create('Timer',MATCH_TIME,'Round ',true)
+    GameState.Value = ''
+    Match.End()
+
+    Start()
 end
 
 
@@ -32,7 +37,7 @@ CharacterDiedSignalInMatch:Connect(Match.CharacterDied)
 
 
 
-local function Start()
+function Start()
     task.wait(4)
     Intermission()
     StartMatch()
