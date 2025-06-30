@@ -2,6 +2,7 @@
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local PlayerBalloon = require(script.Parent.PlayerBalloon)
 local SpawnCharacter = require(game.ServerScriptService.Components.SpawnCharacter)
+local ScreenGuiUtil = require(game.ReplicatedStorage.Shared.Utils.ScreenGuiUtil)
 
 local Tools = game.ReplicatedStorage.Assets.Tools
 
@@ -13,6 +14,7 @@ Combat.__index = Combat
 Combat._MAID = nil
 Combat._PLAYER = nil
 Combat._PLAYER_BALLOON = nil
+Combat._HEART_GUI = nil
 
 
 
@@ -35,6 +37,7 @@ function Combat:__Constructor(player: Player)
     self._MAID['Balloon'] = Balloon
 
     self:CreateGun()
+    self:CreateGui()
 end
 
 
@@ -47,6 +50,14 @@ function Combat:CreateGun()
 
     toolClone.Parent = self._PLAYER.Backpack
 end
+
+function Combat:CreateGui()
+    local HeartsGui = ScreenGuiUtil.Add(self._PLAYER,'Hearts')
+    self._HEART_GUI = HeartsGui
+    self._MAID['HeartsGui'] = HeartsGui
+end
+
+
 
 function Combat:Destroy()
     self._MAID:Destroy()

@@ -15,11 +15,25 @@ local PLayerLoadedSignal = PlayerAPI.GetPlayerLoadedSignal()
 local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
 
+
+
+local function onSpawnRequest(player: Player)
+    local gameState = game.ReplicatedStorage.GameState
+    local isPlaying = player:FindFirstChild('IsPlaying') :: BoolValue
+
+    if gameState.Value == "Match" and isPlaying and isPlaying.Value then
+        Loadouts.Create(player,'Combat')
+        else
+            Loadouts.Create(player,'LobbyCharacter')
+    end
+end
+
+
 local function onCharacterDied(character: Model, player: Player)
 
     task.wait(3)
     CharacterCleanup.Fire(character,player)
-    Loadouts.Create(player,'LobbyCharacter')
+    onSpawnRequest(player)
 end
 
 local function onCharacterAdded(_,player: Player)
@@ -37,7 +51,7 @@ local function onPlayerAdded(player: Player)
     CharacterEvents.Died(onCharacterDied,player)
 
     task.wait(4)
-    Loadouts.Create(player,'LobbyCharacter')
+    onSpawnRequest(player)
 end
 
 local function onPlayerRemoving(player: Player)

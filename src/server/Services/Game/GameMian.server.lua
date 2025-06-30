@@ -5,16 +5,28 @@ local Match = require(script.Parent.Match)
 
 
 local GameState : StringValue = game.ReplicatedStorage.GameState
-local INTERMISSION_TIME = 30
+
+local INTERMISSION_TIME = 20
+local MATCH_TIME = 30
 
 
 
 local function Intermission()
     GameState.Value = 'Intermission'
     GuiCountdown.Create('Intermission',INTERMISSION_TIME,'Intermission ',true)
-
-    GameState.Value = 'Match'
-    Match.Start()
 end
 
-Intermission()
+local function StartMatch()
+    GameState.Value = 'Match'
+    Match.Start()
+    GuiCountdown.Create('Intermission',MATCH_TIME,nil,true)
+end
+
+
+local function Start()
+    Intermission()
+    StartMatch()
+end
+
+Start()
+

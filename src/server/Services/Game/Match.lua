@@ -14,10 +14,12 @@ end
 local function AddLobbyCharactersToMatch()
     for _, player: Player in Players:GetChildren() do
         local isPlaying  = player:FindFirstChild('IsPlaying') :: BoolValue
-        if not isPlaying or not player.Character then continue end
-
+        if not isPlaying then continue end
+        
         isPlaying.Value = true
         table.insert(participatingPlayers,player)
+
+        if not player.Character then continue end
         UpdatePlayerLoadout(player)
     end
 end
