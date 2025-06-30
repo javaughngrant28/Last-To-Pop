@@ -5,7 +5,7 @@ local Raycast = require(game.ReplicatedStorage.Shared.Modules.Raycast)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
 
-local GunEvent: NameSpaceEvent.Server = NameSpaceEvent.new('Gun',{'Shoot'})
+local GunEvent: NameSpaceEvent.Server = NameSpaceEvent.new('Gun',{'Shoot','PopConfirm'})
 
 
 type UnitRay = {
@@ -33,7 +33,9 @@ local function Shoot(player: Player,tool: Tool, mousePosition: Vector3,localBall
    local distance = result and result.Distance or RANGE
    local insatnce = result and result.Instance
 
+
    if insatnce and insatnce:GetAttribute('Balloon') then
+    GunEvent:FireClient('PopConfirm',player,insatnce.Parent.Name)
     BalloonAPI.Pop(insatnce)
    end
 

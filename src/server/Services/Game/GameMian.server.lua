@@ -33,6 +33,7 @@ CharacterDiedSignalInMatch:Connect(Match.CharacterDied)
 
 
 local function Start()
+    task.wait(4)
     Intermission()
     StartMatch()
 end
