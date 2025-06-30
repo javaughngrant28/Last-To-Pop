@@ -24,6 +24,16 @@ local function AddLobbyCharactersToMatch()
     end
 end
 
+local function CharacterDied(player: Player)
+    local isPlaying  = player:FindFirstChild('IsPlaying') :: BoolValue
+    local hearts = player:FindFirstChild('Hearts') :: NumberValue
+
+    hearts.Value -= 1
+
+    if hearts.Value <= 0 then
+        isPlaying.Value = false
+    end
+end
 
 
 function StarMatch()
@@ -31,5 +41,6 @@ function StarMatch()
 end
 
 return {
-    Start = StarMatch
+    Start = StarMatch,
+    CharacterDied = CharacterDied,
 }

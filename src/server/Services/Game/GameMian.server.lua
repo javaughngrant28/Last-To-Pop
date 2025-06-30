@@ -1,7 +1,11 @@
 
 
 local GuiCountdown = require(game.ServerScriptService.Components.GuiCountdown)
+local MatchAPI = require(script.Parent.MatchAPI)
 local Match = require(script.Parent.Match)
+
+
+local CharacterDiedSignalInMatch = MatchAPI._CharacterDiedSignal()
 
 
 local GameState : StringValue = game.ReplicatedStorage.GameState
@@ -23,10 +27,16 @@ local function StartMatch()
 end
 
 
+
+CharacterDiedSignalInMatch:Connect(Match.CharacterDied)
+
+
+
 local function Start()
     Intermission()
     StartMatch()
 end
 
 Start()
+
 

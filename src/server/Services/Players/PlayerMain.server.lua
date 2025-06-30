@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 
 local PlayerAPI = require(game.ServerScriptService.Services.Players.PlayerAPI)
+local MatchAPI = require(game.ServerScriptService.Services.Game.MatchAPI)
 local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterEvents)
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
@@ -14,14 +15,20 @@ local Maid: MaidModule.Maid = MaidModule.new()
 local PLayerLoadedSignal = PlayerAPI.GetPlayerLoadedSignal()
 local PLayerRemovingSignal = PlayerAPI.GetPlayerRemovingSignal()
 
-
-
-
-local function onSpawnRequest(player: Player)
+local function IsInMatch(player: Player): boolean
     local gameState = game.ReplicatedStorage.GameState
     local isPlaying = player:FindFirstChild('IsPlaying') :: BoolValue
 
     if gameState.Value == "Match" and isPlaying and isPlaying.Value then
+        return true
+        else
+            return false
+    end
+end
+
+
+local function onSpawnRequest(player: Player)
+    if IsInMatch(player) then
         Loadouts.Create(player,'Combat')
         else
             Loadouts.Create(player,'LobbyCharacter')
@@ -30,6 +37,10 @@ end
 
 
 local function onCharacterDied(character: Model, player: Player)
+
+    if IsInMatch(player) then
+        MatchAPI.CharacterDied(player)
+    end
 
     task.wait(3)
     CharacterCleanup.Fire(character,player)
