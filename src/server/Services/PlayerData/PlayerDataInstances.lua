@@ -19,7 +19,8 @@ export type PlayerDataInstancesType = {
 		Coins: number
 	},
 
-	IsPlaying: boolean
+	IsPlaying: boolean,
+	Hearts: number,
 }
 
 
@@ -43,6 +44,7 @@ PlayerDataInstances.Get = function() : PlayerDataInstancesType
 		},
 
 		IsPlaying = false,
+		Hearts = 2,
 	}
 end
 
