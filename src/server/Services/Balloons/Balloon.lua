@@ -5,7 +5,6 @@ local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
 local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
-local Ballons = game.ReplicatedStorage.Assets.Balloons
 local PopSound = game.ReplicatedStorage.Assets.Sounds.Balloon.Pop1
 local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
 
