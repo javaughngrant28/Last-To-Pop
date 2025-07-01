@@ -1,19 +1,21 @@
 local Players = game:GetService("Players")
 
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
+local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
+
+local ChestEvent: NameSpaceEvent.Client = NameSpaceEvent.new('Chests',{'Open'})
 
 
 local InteractionsFolder = workspace.Interactions
 local Chest1 = InteractionsFolder:WaitForChild('Chest1',10) :: Model
 
 
-local Player = Players.LocalPlayer
-
 local Maid: MaidModule.Maid = MaidModule.new()
 
 
+
 local function onPromtTriggered()
-    
+    ChestEvent:FireServer('Open','Chest1')
 end
 
 
