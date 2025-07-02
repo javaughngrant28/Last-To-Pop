@@ -1,49 +1,28 @@
 
+local bulletsFolder = workspace:FindFirstChild("BulletFolder") or Instance.new("Folder", workspace)
+bulletsFolder.Name = "BulletFolder"
 
 local NameSpaceEvent = require(game.ReplicatedStorage.Shared.Modules.NameSpaceEvent)
-local Raycast = require(game.ReplicatedStorage.Shared.Modules.Raycast)
-local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
-local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
+local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
+local Gun = require(script.Parent.Gun)
 
+local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
+local GunAPI = require(script.Parent.GunAPI)
+
+
+local Maid: MaidModule.Maid = MaidModule.new()
+
+
+
+local CreateSignal = GunAPI._CreateSignal()
 local GunEvent: NameSpaceEvent.Server = NameSpaceEvent.new('Gun',{'Shoot','PopConfirm'})
 
 
-type UnitRay = {
-    Origin: Vector3,
-    Direction: Vector3,
-}
 
-local RANGE = 500
-
-
-
-
-
-local function Shoot(player: Player,tool: Tool, mousePosition: Vector3,localBalloon: Model)
-   local firePoint = tool:FindFirstChild('Handle'):FindFirstChild('FirePoint') :: Attachment
-   local Origin = firePoint.WorldCFrame.Position
-   local Direction = (mousePosition - Origin).Unit
-
-   local result = Raycast.Fire(Origin,Direction, RANGE,{
-    player.Character,
-    tool,
-    localBalloon,
-   })
-
-   local distance = result and result.Distance or RANGE
-   local insatnce = result and result.Instance
-
-
-   if insatnce and insatnce:GetAttribute('Balloon') then
-    GunEvent:FireClient('PopConfirm',player,insatnce.Parent.Name)
-    BalloonAPI.Pop(insatnce)
-   end
-
-   RemoteUtil.FireAllClients('Effects','VisualizeRay',Origin,Direction,distance)
+local function Create(player: Player)
+    Maid[player.Name] = Gun.new(player)
 end
 
 
 
-GunEvent:OnServer('Shoot',Shoot)
-
-
+CreateSignal:Connect(Create)
