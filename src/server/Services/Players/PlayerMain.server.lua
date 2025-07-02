@@ -28,11 +28,12 @@ end
 
 
 local function onSpawnRequest(player: Player)
-    if IsInMatch(player) then
-        Loadouts.Create(player,'Combat')
-        else
-            Loadouts.Create(player,'LobbyCharacter')
-    end
+    -- if IsInMatch(player) then
+    --     Loadouts.Create(player,'Combat')
+    --     else
+    --         Loadouts.Create(player,'LobbyCharacter')
+    -- end
+    Loadouts.Create(player,'Combat')
 end
 
 
@@ -59,7 +60,7 @@ local function onPlayerAdded(player: Player)
     PLayerLoadedSignal:Fire(player)
 
     CharacterEvents.Spawn(onCharacterAdded,player)
-    CharacterEvents.Died(onCharacterDied,player)
+    -- CharacterEvents.Died(onCharacterDied,player)
 
     task.wait(4)
     onSpawnRequest(player)

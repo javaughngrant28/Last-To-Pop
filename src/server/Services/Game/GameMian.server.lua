@@ -43,6 +43,6 @@ function Start()
     StartMatch()
 end
 
-Start()
+-- Start()
 
 
