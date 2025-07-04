@@ -1,8 +1,10 @@
+local Debris = game:GetService("Debris")
 
 local BulletFolder = workspace:FindFirstChild('BulletFolder')
+local EffectsFolder = game.ReplicatedStorage.Effects
 
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
-local FastCast = require(game.ReplicatedStorage.Libraries.FastCastRedux)
+local Transform = require(game.ReplicatedStorage.Shared.Modules.Transform)
 
 
 local Tools = game.ReplicatedStorage.Assets.Tools
@@ -12,15 +14,14 @@ local Balloons = workspace:WaitForChild('Balloons',5) :: Folder
 local Gun = {}
 Gun.__index = Gun
 
-Gun.__CASTER = nil
-Gun.__CAST_BEHAVIOR = nil
-
 Gun._MAID = nil
 Gun._PLAYER = nil
 Gun._TOOL = nil
 Gun._EVENT = nil
 Gun._POINT_ATTACHMENT = nil
-Gun._BULLET_TEMPLATE = game.ReplicatedStorage.Assets.Bullets.B1
+Gun._RAYCAST_PERAMS = nil
+
+Gun.RAY_EFFECT = nil
 
 
 
@@ -36,10 +37,10 @@ function Gun:__Constructor(player: Player)
     self._MAID = MaidModule.new()
     self._PLAYER = player
 
-    
     self:_CreateTool('Gun1')
-    self:_CreatCaster()
     self:_ConnectToEvent()
+    self:_ConstructRayEffect()
+    self:_CreateRayCastPerams()
 end
 
 
@@ -55,7 +56,6 @@ function Gun:_CreateTool(toolName: string)
     assert(pointAttachment,`{self._PLAYER} {tool} FirePoint Attachemt Not Found`)
     self._POINT_ATTACHMENT = pointAttachment
 
-    
     local event = Instance.new('RemoteEvent')
     self._EVENT = event
     event.Name = 'Fire'
@@ -69,44 +69,44 @@ function Gun:_Fire(_, mousePosition: Vector3)
     local Origin = Attachemt.WorldCFrame.Position
     local Direction = (mousePosition - Origin).Unit
 
+    local rayEffect = self.RAY_EFFECT:Clone()
+    local targetPosition = rayEffect:FindFirstChild('TargetPosition') :: Vector3Value
 
-    self.__CASTER:Fire(Origin,Direction,800,self.__CAST_BEHAVIOR)
+    local Distance = Direction * 1000
+    local Results = workspace:Raycast(Attachemt.WorldCFrame.Position, Distance, self._RAYCAST_PERAMS) :: RaycastResult
+    local TargetInstance = Results and Results.Instance or nil
+
+    if TargetInstance then
+        print(Results.Instance)
+    end
+
+    targetPosition.Value = Results and Results.Position or mousePosition
+    rayEffect.Parent = EffectsFolder
+    Debris:AddItem(rayEffect,2)
 end
 
-function Gun:_CreatCaster()
-    local playerBalloon = Balloons:FindFirstChild(self._PLAYER.Name)
-    
-    local Caster = FastCast.new()
-    
-
-    local castPerams = RaycastParams.new()
-    castPerams.IgnoreWater = true
-    castPerams.FilterType = Enum.RaycastFilterType.Exclude
-    castPerams.FilterDescendantsInstances = {
+function Gun:_CreateRayCastPerams()
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {
         self._PLAYER.Character,
         self._TOOL,
-        playerBalloon,
-        BulletFolder,
+        Balloons:FindFirstChild(self._PLAYER.Name),
     }
 
-    local castBehavior = FastCast.newBehavior()
-    castBehavior.RaycastParams = castPerams
-    castBehavior.CosmeticBulletContainer = BulletFolder
-    castBehavior.CosmeticBulletTemplate = self._BULLET_TEMPLATE
-
-     self.__CASTER = Caster
-     self.__CAST_BEHAVIOR = castBehavior
-
-     Caster.LengthChanged:Connect(function(...)
-        self:_OnLenthChanged(...)
-    end)
+    self._RAYCAST_PERAMS = raycastParams
 end
 
-function Gun:_OnLenthChanged(_,lastPoint: Vector3, direction: Vector3, length: number, velocity: Vector3, bullet: Instance)
-    if not bullet then return end
-    local bulletLength = bullet.Size.Z/2
-	local offset = CFrame.new(0, 0, -(length - bulletLength))
-	bullet.CFrame = CFrame.lookAt(lastPoint, lastPoint + direction):ToWorldSpace(offset)
+function Gun:_ConstructRayEffect()
+    local effectTable = {
+        Spawn = self._POINT_ATTACHMENT,
+        TargetPosition = Vector3.zero,
+    }
+
+    local effectFolder = Transform.ToInstance('Ray',effectTable)
+    self._MAID['EffectFolder'] = effectFolder
+
+    self.RAY_EFFECT = effectFolder
 end
 
 function Gun:_ConnectToEvent()

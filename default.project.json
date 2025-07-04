@@ -15,6 +15,11 @@
           "$className":"RemoteEvent"
         },
         "$ignoreUnknownInstances": true
+      },
+
+      "Effects": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true
       }
 
     },
