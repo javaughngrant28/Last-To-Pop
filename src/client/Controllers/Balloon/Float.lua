@@ -33,6 +33,15 @@ local function MakeObjectFloat(hoverPart: Part, object: Part, maxDistance: numbe
 	alignPosition.ApplyAtCenterOfMass = true
 	alignPosition.Parent = object
 
+	local alignOrientation = Instance.new("AlignOrientation")
+	Maid["AlignOrientation"] = alignOrientation
+	alignOrientation.Attachment0 = attachment1
+	alignOrientation.Attachment1 = attachment0
+	alignOrientation.MaxTorque = math.huge
+	alignOrientation.Responsiveness = 200
+	alignOrientation.RigidityEnabled = true
+	alignOrientation.Parent = object
+
 	Maid:GiveTask(object.AncestryChanged:Connect(function(_, parent)
 		if not parent then
 			Maid:Destroy()
