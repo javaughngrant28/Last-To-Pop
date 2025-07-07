@@ -4,6 +4,7 @@ local Signal = require(game.ReplicatedStorage.Shared.Modules.Signal)
 local CreateSignal = Signal.new()
 local PopSignal = Signal.new()
 local DestroySignal = Signal.new()
+local UpdateCosmeticSignal = Signal.new()
 
 
 
@@ -19,10 +20,18 @@ local function GetDestroySignal(): Signal.SignalType
     return DestroySignal
 end
 
+local function GetUpdateCosmeticSignal(): Signal.SignalType
+    return UpdateCosmeticSignal
+end
+
 
 
 local function Create(owner: Part)
     CreateSignal:Fire(owner)
+end
+
+local function UpdateCosmetic(player: Player, modelName: string)
+    UpdateCosmeticSignal:Fire(player,modelName)
 end
 
 local function Destroy(owner: Part)
@@ -39,9 +48,11 @@ return {
     Create = Create,
     Pop = Pop,
     Destroy = Destroy,
+    UpdateCosmetic = UpdateCosmetic, 
 
     _CreateSignal = GetCreateSignal,
     _PopSignal = GetPopSignal,
     _DestroySignal = GetDestroySignal,
+    _UpdateCosmetic = GetUpdateCosmeticSignal,
 }
 

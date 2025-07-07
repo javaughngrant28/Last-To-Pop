@@ -35,7 +35,7 @@ PlayerDataTemplate.Get = function() : PlayerDataTemplateType
 		},
 
 		Equips = {
-			Balloon = 'Blue',
+			Balloon = 'Ahh',
 			Weapon = 'Gun1',
 		},
 

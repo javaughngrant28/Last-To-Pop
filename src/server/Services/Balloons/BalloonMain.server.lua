@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 
+local BalloonModelFolder = game.ReplicatedStorage.Assets.Models.Balloons :: Folder
 
 local BalloonFolder = Instance.new('Folder')
 BalloonFolder.Parent = workspace
@@ -16,6 +17,7 @@ local Maid: MaidModule.Maid = MaidModule.new()
 local CreateSignal = BalloonAPI._CreateSignal()
 local PopSignal = BalloonAPI._PopSignal()
 local DestroySignal = BalloonAPI._DestroySignal()
+local UpdateCosmeticSignal = BalloonAPI._UpdateCosmetic()
 
 
 
@@ -31,6 +33,15 @@ local function Create(owner: Part)
         primaryPart.Anchored = false
         primaryPart:SetNetworkOwner(player)
         RemoteUtil.FireClient(player,'Balloon',Balloon.MODEL)
+
+        local BalloonEquipped = player:FindFirstChild('Balloon',true) :: StringValue
+        if not BalloonEquipped then warn(`{player} Balloon Value`) return end
+
+        Balloon:UpdateModel(BalloonEquipped.Value)
+
+        Maid[player.Name..'Balloon Value Changed'] = BalloonEquipped:GetPropertyChangedSignal('Value'):Connect(function()
+            Balloon:UpdateModel(BalloonEquipped.Value)
+        end)
     end
 
     Maid[owner] = Balloon
@@ -46,6 +57,16 @@ local function Pop(hitBox: Part)
     end
 end
 
+local function UpdateCosmetic(player: Player,balloonName: string)
+    local Balloon = player:FindFirstChild('Balloon',true) :: StringValue
+	local BalloonModel = BalloonModelFolder:FindFirstChild(balloonName)
+
+	if not Balloon then warn(`{player} Balloon Value`) return end
+	if not BalloonModel then warn(`{player} Balloon {balloonName} Model Not Found`) end
+
+	Balloon.Value = balloonName
+end
+
 local function Destroy(owner: Part)
     local Balloon = Maid[owner] :: Balloon.BalloonType
     if Balloon then
@@ -58,5 +79,6 @@ end
 PopSignal:Connect(Pop)
 DestroySignal:Connect(Destroy)
 CreateSignal:Connect(Create)
+UpdateCosmeticSignal:Connect(UpdateCosmetic)
 
 

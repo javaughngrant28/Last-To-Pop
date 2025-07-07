@@ -4,9 +4,12 @@ local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local SoundUtil = require(game.ReplicatedStorage.Shared.Utils.SoundUtil)
 local ParticleUtil = require(game.ReplicatedStorage.Shared.Utils.ParticleUtil)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
+local AttachModel = require(game.ServerScriptService.Components.AttachModel)
+local ModelUtil = require(game.ReplicatedStorage.Shared.Utils.ModelUtil)
 
 local PopSound = game.ReplicatedStorage.Assets.Sounds.Balloon.Pop1
 local Effect = game.ReplicatedStorage.Assets.Effects['Hit Effect'] :: Model
+local BalloonModelFolder = game.ReplicatedStorage.Assets.Models.Balloons :: Folder
 
 
 
@@ -14,9 +17,10 @@ export type BalloonType = {
 	MODEL: Model,
 	HITBOX: Part,
 
-	new: (part: Part)-> BalloonType,
+	new: (part: Part, modelName: string?)-> BalloonType,
+	UpdateModel: (self: BalloonType, modelName: string)-> nil,
 	Pop: ()-> (),
-	Destroy: (BalloonType)->(),
+	Destroy: (self: BalloonType, BalloonType)->(),
 }
 
 
@@ -42,7 +46,7 @@ Balloon.PART = nil
 
 
 
-function Balloon.new(part: Part): BalloonType
+function Balloon.new(part: Part,modelName: string?): BalloonType
 	local self = setmetatable({}, Balloon)
 	self:__Constructor(part)
 
@@ -50,7 +54,7 @@ function Balloon.new(part: Part): BalloonType
 end
 
 
-function Balloon:__Constructor(part: Part)
+function Balloon:__Constructor(part: Part, modelName: string?)
 	assert(part and part:IsA('BasePart'),`{part} Invalid BasePart`)
 	
 	self.PART = part
@@ -84,6 +88,10 @@ function Balloon:__Constructor(part: Part)
 	self._MAID['Hitbox'] = hitbox
 
 	self:_AutoCleanup()
+
+	if modelName then
+		self:UpdateModel(modelName)
+	end
 end
 
 
@@ -102,6 +110,22 @@ function Balloon:Pop()
 
 		humanoid.Health = 0
 		RemoteUtil.FireClient(self._PLAYER,'Pop',positionPopped,self._POP_FORCE)
+	end
+end
+
+function Balloon:UpdateModel(modelName: string)
+	local model = BalloonModelFolder:FindFirstChild(modelName) :: Model
+	assert(model,`{modelName} Balloon Model Not Found`)
+
+	local modelClone = model:Clone() :: Model
+	self._MAID['Cosmetic Model'] = modelClone
+	modelClone.Parent = workspace
+
+	ModelUtil.ScaleToPartSize(modelClone,self.MODEL.PrimaryPart)
+	AttachModel.ToPart(self.MODEL.PrimaryPart,modelClone)
+
+	if self._PLAYER then
+		modelClone.PrimaryPart:SetNetworkOwner(self._PLAYER)
 	end
 end
 
@@ -126,7 +150,7 @@ function Balloon:_CreateBall(): Part
 	sphere.CastShadow = false
     sphere.Anchored = true
 	sphere.Massless = true
-	sphere.Transparency = 0
+	sphere.Transparency = 1
     sphere.Color = Color3.fromRGB(255, 0, 0)
     
     local attachment = Instance.new("Attachment")
