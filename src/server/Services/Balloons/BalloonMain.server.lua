@@ -6,6 +6,10 @@ local BalloonFolder = Instance.new('Folder')
 BalloonFolder.Parent = workspace
 BalloonFolder.Name = 'Balloons'
 
+local BalloonCosmeticFolder = Instance.new('Folder')
+BalloonCosmeticFolder.Parent = workspace
+BalloonCosmeticFolder.Name = 'BalloonCosmetic'
+
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
@@ -21,8 +25,8 @@ local UpdateCosmeticSignal = BalloonAPI._UpdateCosmetic()
 
 
 
-local function Create(owner: Part)
-    local Balloon = Balloon.new(owner) :: Balloon.BalloonType
+local function Create(owner: Part,modelName: string?)
+    local Balloon = Balloon.new(owner,modelName) :: Balloon.BalloonType
     local primaryPart = Balloon.MODEL.PrimaryPart :: Part
 
     local character = owner.Parent

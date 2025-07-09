@@ -15,6 +15,7 @@ raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 raycastParams.FilterDescendantsInstances = {}
 
 local Balloons = workspace:WaitForChild('Balloons')
+local BalloonCosmeticFolder = workspace:WaitForChild('BalloonCosmetic')
 
 local Debounce = false
 local DebounceTime = 0.4
@@ -32,9 +33,11 @@ local function onToolAdded(tool: Tool)
     
     local humanoid = character:WaitForChild('Humanoid',10) :: Humanoid
     local balloonFound = Balloons:WaitForChild(character.Name,20)
+    local BalloonCosmetic = BalloonCosmeticFolder:WaitForChild(character.Name,20)
     
     table.insert(raycastParams.FilterDescendantsInstances,character)
     table.insert(raycastParams.FilterDescendantsInstances,balloonFound)
+    table.insert(raycastParams.FilterDescendantsInstances,BalloonCosmetic)
     table.insert(raycastParams.FilterDescendantsInstances,tool)
 
     local FireEvent = tool:FindFirstChild('Fire',true) :: RemoteEvent

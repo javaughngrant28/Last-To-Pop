@@ -26,8 +26,8 @@ end
 
 
 
-local function Create(owner: Part)
-    CreateSignal:Fire(owner)
+local function Create(...: any?)
+    CreateSignal:Fire(...)
 end
 
 local function UpdateCosmetic(player: Player, modelName: string)

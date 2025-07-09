@@ -1,6 +1,7 @@
 local Debris = game:GetService("Debris")
 
 local BulletFolder = workspace:FindFirstChild('BulletFolder')
+local BalloonCosmeticFolder = workspace:WaitForChild('BalloonCosmetic')
 local EffectsFolder = game.ReplicatedStorage.Effects
 
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
@@ -92,6 +93,7 @@ function Gun:_CreateRayCastPerams()
         self._PLAYER.Character,
         self._TOOL,
         Balloons:FindFirstChild(self._PLAYER.Name),
+        BalloonCosmeticFolder,
     }
 
     self._RAYCAST_PERAMS = raycastParams

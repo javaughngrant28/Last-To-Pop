@@ -6,7 +6,7 @@ local TestBallons = workspace.TestBallons:GetChildren() :: {Part}
 task.wait(4)
 
 for _, part in TestBallons do
-    BallonAPI.Create(part)
+    BallonAPI.Create(part,'Blue')
 end
 
  

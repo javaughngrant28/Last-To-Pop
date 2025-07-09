@@ -48,7 +48,7 @@ Balloon.PART = nil
 
 function Balloon.new(part: Part,modelName: string?): BalloonType
 	local self = setmetatable({}, Balloon)
-	self:__Constructor(part)
+	self:__Constructor(part,modelName)
 
 	return self
 end
@@ -119,14 +119,18 @@ function Balloon:UpdateModel(modelName: string)
 
 	local modelClone = model:Clone() :: Model
 	self._MAID['Cosmetic Model'] = modelClone
-	modelClone.Parent = workspace
-
+	
 	ModelUtil.ScaleToPartSize(modelClone,self.MODEL.PrimaryPart)
 	AttachModel.ToPart(self.MODEL.PrimaryPart,modelClone)
-
+	
 	if self._PLAYER then
+		modelClone.Parent = workspace
 		modelClone.PrimaryPart:SetNetworkOwner(self._PLAYER)
+		modelClone.Name = self._PLAYER.Name
+		modelClone.Parent = workspace:FindFirstChild('BalloonCosmetic')
 	end
+
+	modelClone.Parent = workspace:FindFirstChild('BalloonCosmetic')
 end
 
 
