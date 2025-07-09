@@ -6,7 +6,9 @@ local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 
 
 local Maid: MaidModule.Maid = MaidModule.new()
-local GunCreateSignal = GunAPI._CreateSignal()
+
+local CreateSignal = GunAPI._CreateSignal()
+local DestroySignal = GunAPI._DestroySignal()
 
 
 
@@ -14,5 +16,10 @@ local function CreateGun(player: Player)
     Maid[player.Name] = Gun.new(player)
 end
 
+local function Destroy(playerName: string)
+    Maid[playerName] = nil
+end
 
-GunCreateSignal:Connect(CreateGun)
+
+CreateSignal:Connect(CreateGun)
+DestroySignal:Connect(Destroy)

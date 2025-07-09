@@ -28,15 +28,24 @@ function Gun.new(player: Player)
     return self
 end
 
+function Gun:CreateTool()
+    local tool = Tool.Create('Gun1')
+    tool.Parent = self._PLAYER.Backpack
+    self._MAID['Tool'] = tool
+end
+
+
 
 function Gun:__Constructor(player: Player)
     self._MAID = MaidModule.new()
     self._PLAYER = player
     
-    local tool = Tool.Create('Gun1')
-    tool.Parent = player.Backpack
-    self._MAID['Tool'] = tool
+    self:CreateTool()
 end
+
+
+
+
 
 
 
