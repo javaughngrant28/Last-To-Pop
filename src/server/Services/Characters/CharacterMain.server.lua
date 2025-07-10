@@ -4,6 +4,7 @@ local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterE
 local FunctionUtil = require(game.ReplicatedStorage.Shared.Utils.FunctionUtil)
 local PlayerAPI = require(game.ServerScriptService.Services.Players.PlayerAPI)
 local GunAPI = require(game.ServerScriptService.Services.Guns.GunAPI)
+local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
 
 
 
@@ -14,8 +15,8 @@ local function SetCollisionGroup(model: Model)
 end
 
 local function onCharacterAdded(character: Model, player: Player)
-
     GunAPI.Create(player)
+    BalloonAPI.Create(character.Head,player)
     SetCollisionGroup(character)
 end
 

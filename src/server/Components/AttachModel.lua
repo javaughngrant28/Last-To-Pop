@@ -53,6 +53,15 @@ function AttachModel.ToPart(part: Part, model: Model)
      weld.Parent = model.PrimaryPart
 end
 
+function AttachModel.Rig(part0: Part, model: Model)
+    for _, child in model:GetChildren() do
+        if child:IsA('Part') and child ~= part0 then
+            local weld = CreateWild(child, part0) :: Motor6D
+            weld.Parent = child
+        end
+    end
+end
+
 
 function AttachModel.__Torso(model: Model, character: Model)
     local UpperTorso = character:FindFirstChild('UpperTorso') :: BasePart

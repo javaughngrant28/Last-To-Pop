@@ -118,7 +118,7 @@ end
 
 function Gun:__CreateRayCastPerms()
     local raycastParams = RaycastParams.new()
-    raycastParams.RespectCanCollide = true
+    raycastParams.RespectCanCollide = false
     raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 
     raycastParams.FilterDescendantsInstances = {

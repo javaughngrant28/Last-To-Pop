@@ -8,6 +8,16 @@
         "$className": "Folder",
         "$ignoreUnknownInstances": true
       },
+
+      "Balloons": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true
+      },
+
+      "CosmeticBalloons": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": true
+      },
       "$ignoreUnknownInstances": true
     },
 

@@ -1,8 +1,6 @@
 
 
--- ModelUtil.lua
 
-local ModelUtil = {}
 
 -- Helper function to get uniform scale factor
 local function getScaleFactor(partSize: Vector3, modelSize: Vector3): number
@@ -15,7 +13,7 @@ local function getScaleFactor(partSize: Vector3, modelSize: Vector3): number
 	return math.min(scaleX, scaleY, scaleZ)
 end
 
-function ModelUtil.ScaleToPartSize(model: Model, targetPart: BasePart): Model
+local function ScaleToPartSize(model: Model, targetPart: BasePart): Model
 	assert(model and model:IsA("Model"), "First argument must be a Model.")
 	assert(targetPart and targetPart:IsA("BasePart"), "Second argument must be a BasePart.")
 	
@@ -30,4 +28,20 @@ function ModelUtil.ScaleToPartSize(model: Model, targetPart: BasePart): Model
 	model:ScaleTo(scaleFactor)
 end
 
-return ModelUtil
+local function CreateWild(p1: BasePart?, p0: BasePart?) : Motor6D
+    assert(p1 and p0)
+    local moter6D = Instance.new('Motor6D')
+    moter6D.Part0 = p0
+    moter6D.Part1 = p1
+    return moter6D
+end
+
+local function WeldToPart(part: Part, model: Model)
+	local weld = CreateWild(model.PrimaryPart, part) :: Motor6D
+     weld.Parent = model.PrimaryPart
+end
+
+return {
+	ScaleToPartSize = ScaleToPartSize,
+	WeldToPart = WeldToPart
+}
