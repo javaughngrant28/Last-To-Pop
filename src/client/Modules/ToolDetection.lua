@@ -9,6 +9,13 @@ type ConnectedTableType = {[CallbackFunctionType]: {Tool}}
 local CallbackTable = {} :: CallbackTableType
 local ConnectedTable = {} :: ConnectedTableType
 
+local function CallFunction(attributes: {string: any}, className: string): boolean
+	if className == '' then return true end
+	if attributes['Class'] and attributes['Class'] == className then return true end
+	
+	return false
+end
+
 local function AttemptCallback(tool: Instance)
 	if not tool:IsA('Tool') then return end
 
@@ -18,10 +25,9 @@ local function AttemptCallback(tool: Instance)
 
 		if table.find(ConnectedTable[func], tool) then return end
 
-		if attributes['Class'] and attributes['Class'] == className then
-			func(tool)
-		else
-			func(tool)
+		if CallFunction(attributes,className) then
+			local success, errorMessage = pcall(func,tool)
+			if not success then warn(errorMessage) end
 		end
 
 		table.insert(ConnectedTable[func], tool)
@@ -62,8 +68,15 @@ local function AddToConnectionTable(func: CallbackFunctionType,className: string
 end
 
 local function NewConnection(func: CallbackFunctionType,className: string?)
-	AddToConnectionTable(func,className)
-	FindExistingTool(func,className)
+	local success, errorMessage = pcall(function()
+		AddToConnectionTable(func,className)
+		FindExistingTool(func,className)
+	end)
+
+	if not success then
+		warn(errorMessage)
+	end
+	
 end
 
 local function DestroyConnections(func: CallbackFunctionType)

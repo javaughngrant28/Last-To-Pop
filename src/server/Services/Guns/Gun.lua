@@ -57,7 +57,7 @@ function Gun:Fire(player: Player, mousePosition: Vector3)
 end
 
 function Gun:CreateTool()
-    local tool = Tool.Create('Gun1')
+    local tool = Tool.Create('Gun1','Gun')
     tool.Parent = self._PLAYER.Backpack
 
     local attachment = tool:FindFirstChild('FirePoint',true) :: Attachment

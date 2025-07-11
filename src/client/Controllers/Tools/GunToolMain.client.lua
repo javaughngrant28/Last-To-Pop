@@ -40,7 +40,7 @@ local function ToolAdded(tool: Tool)
 end
 
 local function onCharacterAdded(character: Model)
-    ToolDetection.new(ToolAdded)
+    ToolDetection.new(ToolAdded,'Gun')
     raycastParams.FilterDescendantsInstances = {
         character
     }
