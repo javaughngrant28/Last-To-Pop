@@ -27,7 +27,12 @@ end
 
 local function CreatHitbox(size: Vector3, scale: number)
     local part = CreatPart()
+    part.Name = 'HitBox'
     part.Size = size * scale
+    part.CanQuery = true
+    part.CanCollide = true
+    part.CollisionGroup = 'HitBox'
+    part:SetAttribute('BalloonHitBox',true)
     return part
 end
 

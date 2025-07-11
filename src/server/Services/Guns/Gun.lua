@@ -119,12 +119,14 @@ end
 function Gun:__CreateRayCastPerms()
     local raycastParams = RaycastParams.new()
     raycastParams.RespectCanCollide = false
+    raycastParams.CollisionGroup = 'Ray'
     raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 
     raycastParams.FilterDescendantsInstances = {
         self._PLAYER.Character,
         self.TOOL,
         workspace.Bullets,
+        workspace.Balloons:FindFirstChild(self._PLAYER.Name)
     }
 
     self.__RAYCAST_PERAMS = raycastParams
@@ -139,7 +141,10 @@ end
 
 function Gun:_OnRayHit(_,result: RaycastResult,_,bullet: Instance)
     local hit = result.Instance
-    print(hit)
+    
+    if hit:GetAttribute('BalloonHitBox') then
+        print('Pop',hit)
+    end
 end
 
 function Gun:_CastTeminated(cast)

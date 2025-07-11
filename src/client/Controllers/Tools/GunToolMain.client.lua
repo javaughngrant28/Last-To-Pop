@@ -7,7 +7,8 @@ local CharacterEvents = require(game.ReplicatedStorage.Shared.Modules.CharacterE
 local Maid: MaidModule.Maid = MaidModule.new()
 
 local raycastParams = RaycastParams.new()
-raycastParams.RespectCanCollide = true
+raycastParams.RespectCanCollide = false
+raycastParams.CollisionGroup = 'Ray'
 raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 
 

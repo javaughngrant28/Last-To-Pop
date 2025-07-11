@@ -5,6 +5,8 @@ local RemoteUtil = require(game.ReplicatedStorage.Shared.Utils.RemoteUtil)
 
 
 export type BalloonType = {
+    HITBOX: Part,
+    
     new: (part: Part, player: Player?) -> BalloonType,
     Pop: () -> nil,
     Destroy: (self: BalloonType) -> nil,
@@ -12,6 +14,8 @@ export type BalloonType = {
 
 local Balloon = {}
 Balloon.__index = Balloon
+
+Balloon.HITBOX = nil
 
 Balloon._MAID = nil
 Balloon._PLAYER = nil
@@ -45,6 +49,8 @@ function Balloon:_CreateBalloon()
         }
 
     local BalloonModel, CosmeticModel = BalloonConstuction.Fire(data)
+    local Hitbox = BalloonModel:FindFirstChild('HitBox') :: Part
+
     BalloonModel.PrimaryPart.CFrame = self._PART.CFrame + Vector3.new(0,4,0)
     
     if self._PLAYER then
@@ -65,6 +71,7 @@ function Balloon:_CreateBalloon()
     BalloonModel.Parent = workspace.Balloons
     CosmeticModel.Parent = workspace.CosmeticBalloons
 
+    self.HITBOX = Hitbox
     self._MAID['BalloonModel'] = BalloonModel
     self._MAID['CosmeticModel'] = CosmeticModel
 end

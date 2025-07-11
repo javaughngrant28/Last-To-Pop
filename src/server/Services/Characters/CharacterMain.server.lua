@@ -15,8 +15,8 @@ local function SetCollisionGroup(model: Model)
 end
 
 local function onCharacterAdded(character: Model, player: Player)
-    GunAPI.Create(player)
     BalloonAPI.Create(character.Head,player)
+    GunAPI.Create(player)
     SetCollisionGroup(character)
 end
 
