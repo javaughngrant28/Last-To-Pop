@@ -30,10 +30,13 @@ function Balloon.new(part: Part, player: Player?) : BalloonType
 end
 
 function Balloon:Pop()
-    local player = self._PLAYER
+    if not self.HITBOX:GetAttribute('BalloonHitBox') then return end
+    self.HITBOX:SetAttribute('BalloonHitBox', nil)
 
-    if player and player.Character then
-        local humanoid = player.Character.Humanoid :: Humanoid
+    local player = self._PLAYER
+    local humanoid = player and player.Character and player.Character:FindFirstChild('Humanoid') or nil :: Humanoid?
+
+    if humanoid then
         humanoid.Health = 0
     end
 

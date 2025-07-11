@@ -142,10 +142,12 @@ end
 
 function Gun:_OnRayHit(_,result: RaycastResult,_,bullet: Instance)
     local hit = result.Instance
-    
-    if hit:GetAttribute('BalloonHitBox') then
-        BalloonAPI.Pop(hit)
-    end
+    if not hit:GetAttribute('BalloonHitBox') then return end
+
+    local humanoid = self._PLAYER.Character and self._PLAYER.Character:FindFirstChild('Humanoid') or nil :: Humanoid?
+    if humanoid and humanoid.Health <= 0 then return end 
+
+    BalloonAPI.Pop(hit)
 end
 
 function Gun:_CastTeminated(cast)
