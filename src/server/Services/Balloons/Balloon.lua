@@ -29,6 +29,17 @@ function Balloon.new(part: Part, player: Player?) : BalloonType
     return self
 end
 
+function Balloon:Pop()
+    local player = self._PLAYER
+
+    if player and player.Character then
+        local humanoid = player.Character.Humanoid :: Humanoid
+        humanoid.Health = 0
+    end
+
+    self:Destroy()
+end
+
 
 
 function Balloon:__Constructor(part: Part, player: Player?)
@@ -78,8 +89,10 @@ end
 
 
 function Balloon:Destroy()
+    if self._MAID then
+        self._MAID:Destroy()
+    end
 
-    self._MAID:Destroy()
     for index, _ in pairs(self) do
          self[index] = nil
      end

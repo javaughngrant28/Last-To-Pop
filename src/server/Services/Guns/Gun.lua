@@ -6,6 +6,7 @@ local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 local Tool = require(game.ServerScriptService.Components.Tool)
 local FastCast = require(game.ServerScriptService.Modules.FastCastRedux).Init
 local PartCache = require(game.ServerScriptService.Modules.PartCache)
+local BalloonAPI = require(game.ServerScriptService.Services.Balloons.BalloonAPI)
 
 
 
@@ -143,7 +144,7 @@ function Gun:_OnRayHit(_,result: RaycastResult,_,bullet: Instance)
     local hit = result.Instance
     
     if hit:GetAttribute('BalloonHitBox') then
-        print('Pop',hit)
+        BalloonAPI.Pop(hit)
     end
 end
 
