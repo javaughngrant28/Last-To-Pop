@@ -1,5 +1,4 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+
 local MaidModule = require(game.ReplicatedStorage.Shared.Modules.Maid)
 
 local Maids = {} :: {
@@ -41,6 +40,8 @@ local function MakeObjectFloat(hoverPart: Part, object: Part, maxDistance: numbe
 	alignOrientation.Responsiveness = 200
 	alignOrientation.RigidityEnabled = true
 	alignOrientation.Parent = object
+
+	object.CFrame = attachment0.WorldCFrame
 
 	Maid:GiveTask(object.AncestryChanged:Connect(function(_, parent)
 		if not parent then

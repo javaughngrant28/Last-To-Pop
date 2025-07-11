@@ -47,7 +47,6 @@ local function BalloonGiven(balloon: Model)
 end
 
 local function BalloonCosmeticGiven(balloon: Model)
-    print(balloon)
     if balloon.Name ~= player.Name then return end
 
     Maid['CosmeticChildAdded'] = balloon.DescendantAdded:Connect(balloonInstance)
